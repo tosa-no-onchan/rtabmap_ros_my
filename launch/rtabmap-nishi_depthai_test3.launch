@@ -1,0 +1,294 @@
+<!-- rtabmap-nishi_depthai_test3.launch -->
+<launch>
+  <!--
+    1) PC
+      $ sudo ufw disable / enable / reload
+      $ sudo ntpdate ntp.nict.jp
+      $ roscore
+    2) SBC
+      $ sudo ntpdate ntp.nict.jp
+      $ sudo chmod 777 /dev/ttyTHS1
+      $ roslaunch turtlebot3_bringup turtlebot3_robot.launch --><!-- screen
+    3) SBC
+      $ roslaunch rtabmap_ros_my rtabmap-nishi_depthai_test3.launch SBC:=true
+    4) PC
+      $ roslaunch rtabmap_ros_my rtabmap-nishi_depthai_test3.launch PC:=true [rtabmapviz:=true]
+    5) PC
+      $ rosrun ros_start multi_goals4.py
+  -->
+  <!-- Arguments -->
+  <arg name="model" default="$(env TURTLEBOT3_MODEL)" doc="model type [burger, waffle, waffle_pi]"/>
+  <arg name="open_rviz" default="false"/>
+  <arg name="rtabmapviz" default="false"/>
+  <arg name="rviz_nishi" default="true"/>
+  <arg name="rviz_tb" default="false"/>
+  <arg name="move_forward_only" default="false"/>
+
+  <arg name="rviz" default="false" />
+
+  <arg name="localization" default="false"/>
+  <arg name="database_path" default="~/.ros/rtabmap_test1.db"/>
+  <arg     if="$(arg localization)" name="rtabmap_args" default=""/>
+  <arg unless="$(arg localization)" name="rtabmap_args" default="--delete_db_on_start"/>
+
+  <arg name="stereo_sync" default="false" />
+
+  <arg name="move_base" default="true"/>
+
+  <arg name="SBC" default="false"/>
+  <arg name="SBCX" default="false"/>
+  <arg name="PC" default="false"/>
+
+  <arg name="with_camera" default="true"/>
+
+
+  <arg name="simulation"        default="false"/>
+  <arg name="rgb_topic"   default="/rgb/image"/>
+  <arg name="rgb_topic_comp"   default="/rgb/image/compressed"/>
+  <arg name="camera_info_topic" default="/rgb/camera_info"/>
+  <arg name="depth_topic" default="/stereo_publisher/stereo/depth"/>
+  <arg name="depth_topic_comp" default="/stereo_publisher/stereo/depth/compressed"/>
+
+  <arg name="wait_for_transform"  default="0.2"/> 
+
+  <!-- <args for urdf/> -->
+  <!-- <arg name="camera_name"       default="oak" /> -->
+  <arg name="tf_prefix"         default="oak" />
+  <arg name="mode"              default="depth" />
+  
+  <arg name="confidence"        default="200" /> 
+  <arg name="LRchecktresh"      default="5" /> 
+  <arg name="lrcheck"           default="true" /> 
+  <arg name="extended"          default="false" /> 
+  <arg name="subpixel"          default="true" />
+  <arg name="monoResolution"    default="400p" /> 
+  <arg name="camera_param_uri"  default="package://depthai_examples/params/camera" />
+
+  <arg name="odom_off"    default="40" />
+  <!-- <arg name="odom_off"    default="30" /> -->
+  <!-- <arg name="odom_off"    default="135" /> -->
+  <!-- <arg name="rate"    default="9.0" /> -->
+  <arg name="rate"    default="16.0" />    <!-- rgb_depth.cpp own publish rate -->
+  <arg name="rate_ad"    default="0.0" /> <!-- foxbot-core3 publish rate adjust -->
+
+  <arg name="BASE_LINK" default="base_link"/>
+
+  <!-- <param name="use_sim_time" type="bool" value="True"/> -->
+  <param name="use_sim_time" type="bool" value="False"/>
+
+  <!-- 180[d] -->
+  <arg name="pi/2" value="1.5707963267948966" />
+  <!-- <arg name="optical_rotate" value="0 0 0 -$(arg pi/2) 0 -$(arg pi/2)" /> -->
+  <arg name="optical_rotate" value="0 0 0.19 -$(arg pi/2) 0 -$(arg pi/2)" />
+
+  <group if="$(arg SBC)">
+    <node pkg="tf" type="static_transform_publisher" name="oak_base_link"
+          args="$(arg optical_rotate) $(arg BASE_LINK) oak-d_frame 100" />
+    <node pkg="tf" type="static_transform_publisher" name="oak_right_camera_link"
+          args="0.038 0 0 0 0 0 oak-d_frame oak_right_camera_frame 100" /> 
+    <node pkg="tf" type="static_transform_publisher" name="oak_right_camera_optical_link"
+          args="0 0 0 0 0 0 oak_right_camera_frame oak_right_camera_optical_frame 100" /> 
+    <node pkg="tf" type="static_transform_publisher" name="oak_left_camera_link"
+          args="-0.038 0 0 0 0 0 oak-d_frame oak_left_camera_frame 100" /> 
+    <node pkg="tf" type="static_transform_publisher" name="oak_left_camera_optical_link"
+          args="0 0 0 0 0 0 oak_left_camera_frame oak_left_camera_optical_frame 100" /> 
+
+    <node pkg="tf" type="static_transform_publisher" name="oak_rgb_camera_link"
+          args="0.0 0 0 0 0 0 oak-d_frame oak_rgb_camera_optical_frame 100" /> 
+
+  </group>
+
+  <!-- Turtlebot3 -->
+  <include if="$(arg PC)" file="$(find turtlebot3_bringup)/launch/turtlebot3_remote.launch">
+    <arg name="model" value="$(arg model)" />
+  </include>
+
+  <group if="$(arg SBC)"> 
+    <node name="rgb_depth" pkg="depthai_ros_app" type="rgb_depth" output="screen" required="true">
+        <param name="tf_prefix"        value="$(arg tf_prefix)"/>
+        <!-- <param name="camera_name"      value="$(arg camera_name)"/> -->
+        <param name="camera_param_uri" value="$(arg camera_param_uri)"/>
+        <param name="mode"             value="$(arg mode)"/>
+        <param name="lrcheck"          value="$(arg lrcheck)"/>
+        <param name="extended"         value="$(arg extended)"/>
+        <param name="subpixel"         value="$(arg subpixel)"/>
+        <param name="confidence"       value="$(arg confidence)"/>
+        <param name="LRchecktresh"     value="$(arg LRchecktresh)"/>
+        <param name="monoResolution"   value="$(arg monoResolution)"/>
+        <param name="odom_off"   value="$(arg odom_off)"/>
+        <param name="rate"   value="$(arg rate)"/>
+        <param name="rate_ad"   value="$(arg rate_ad)"/>
+        <!--
+            /rgb/image  width 480 height 270 
+            /rgb/camera_info  frame_id: "oak_rgb_camera_optical_frame" 480 x 270
+            /stereo_publisher/stereo/camera_info: "oak_right_camera_optical_frame"  480 x 270
+            /stereo_publisher/stereo/depth  480 x 270
+
+            /camera/sync
+            /rgb/camera_info
+            /rgb/image
+            /rgb/image/compressed
+            /rgb/image/compressed/parameter_descriptions
+            /rgb/image/compressed/parameter_updates
+            /rgb/image/compressedDepth
+            /rgb/image/compressedDepth/parameter_descriptions
+            /rgb/image/compressedDepth/parameter_updates
+            /rgb/image/theora
+            /rgb/image/theora/parameter_descriptions
+            /rgb/image/theora/parameter_updates
+
+            /stereo_publisher/stereo/camera_info
+            /stereo_publisher/stereo/depth
+            /stereo_publisher/stereo/depth/compressed
+            /stereo_publisher/stereo/depth/compressed/parameter_descriptions
+            /stereo_publisher/stereo/depth/compressed/parameter_updates
+            /stereo_publisher/stereo/depth/compressedDepth
+            /stereo_publisher/stereo/depth/compressedDepth/parameter_descriptions
+            /stereo_publisher/stereo/depth/compressedDepth/parameter_updates
+            /stereo_publisher/stereo/depth/theora
+            /stereo_publisher/stereo/depth/theora/parameter_descriptions
+            /stereo_publisher/stereo/depth/theora/parameter_updates
+        -->
+    </node>            
+
+    <!-- Create point cloud for the planner -->
+    <node pkg="nodelet" type="nodelet" name="depth2cloud" args="standalone rtabmap_ros/point_cloud_xyz">
+        <remap from="depth/image"       to="/stereo_publisher/stereo/depth"/>
+        <remap from="depth/camera_info" to="/stereo_publisher/stereo/camera_info"/>
+        <remap from="cloud"                 to="/camera/depth/points"/>
+        
+        <param name="voxel_size" type="double" value="0.05"/>
+        <!-- <param name="decimation" type="int" value="4"/> -->
+        <param name="decimation" type="int" value="2"/>
+        <param name="max_depth" type="double" value="4"/>
+    </node>
+  </group>
+
+  <group if="$(arg SBC)" ns="rtabmap">
+    <!--
+    <node if="$(eval model=='waffle')" pkg="rtabmap_ros" type="rgbd_sync" name="rgbd_sync" output="screen">
+      <remap from="rgb/image"         to="/camera/rgb/image_raw"/>
+      <remap from="depth/image"       to="/camera/depth/image_raw"/>
+      <remap from="rgb/camera_info"   to="/camera/rgb/camera_info"/>
+    </node>
+    -->
+    <node name="rtabmap" pkg="rtabmap_ros" type="rtabmap" output="screen" args="$(arg rtabmap_args)">
+      <param name="database_path"       type="string" value="$(arg database_path)"/>
+      <param name="frame_id"            type="string" value="base_link"/>
+  	  <!-- <param name="wait_for_transform_duration"  type="double"   value="$(arg wait_for_transform)"/> -->
+      <param name="subscribe_rgb"   type="bool" value="false"/>
+  	  <param name="subscribe_depth"     type="bool"   value="true"/>
+      <param name="subscribe_stereo" type="bool" value="false"/>
+      <!--
+      <param     if="$(eval model=='waffle')" name="subscribe_rgbd" type="bool" value="true"/>
+      <param unless="$(eval model=='waffle')" name="subscribe_rgbd" type="bool" value="false"/>
+      -->
+
+      <!-- <param name="subscribe_scan"      type="bool"   value="true"/> -->
+      <param name="subscribe_scan"      type="bool"   value="false"/>
+      <param name="approx_sync"         type="bool"   value="true"/>
+      <!-- <param name="approx_sync"         type="bool"   value="false"/> -->
+
+      <param name="queue_size" type="int" value="30"/>
+      <!-- <param name="map_negative_poses_ignored" type="bool" value="true"/> -->
+      <!-- <param name="map_always_update" type="bool" value="false"/> -->
+      <param name="map_always_update" type="bool" value="true"/>
+
+      <!-- use actionlib to send goals to move_base --> 
+      <param name="use_action_for_goal" type="bool" value="true"/>
+      <remap from="move_base"            to="/move_base"/>
+	
+      <!-- inputs -->
+      <!-- <remap from="odom"            to="/odom"/> -->
+      <remap from="odom" to="/odom_fox"/>
+      <remap from="scan"            to="/scan"/>
+      <remap from="rgb/image"       to="$(arg rgb_topic)"/>
+  	  <remap from="depth/image"     to="$(arg depth_topic)"/>
+  	  <remap from="rgb/camera_info" to="$(arg camera_info_topic)"/>
+
+      <!-- output -->
+      <remap from="grid_map" to="/map"/>
+	
+      <!-- RTAB-Map's parameters -->
+      <!-- <param name="Reg/Strategy"                 type="string" value="1"/> -->
+
+      <!-- RTAB-Map's parameters: do "rosrun rtabmap rtabmap (double-dash)params" to see the list of available parameters. -->
+      <param name="RGBD/ProximityBySpace"        type="string" value="true"/>   <!-- Local loop closure detection (using estimated position) with locations in WM -->
+      <param name="RGBD/OptimizeFromGraphEnd"    type="string" value="false"/>  <!-- Set to false to generate map correction between /map and /odom -->
+      <param name="Kp/MaxDepth"                  type="string" value="4.0"/>
+      <param name="Reg/Strategy"                 type="string" value="0"/>      <!-- Loop closure transformation: 0=Visual, 1=ICP, 2=Visual+ICP -->
+      <param name="Icp/CorrespondenceRatio"      type="string" value="0.3"/>
+      <param name="Vis/MinInliers"               type="string" value="15"/>      <!-- 3D visual words minimum inliers to accept loop closure -->
+      <param name="Vis/InlierDistance"           type="string" value="0.1"/>    <!-- 3D visual words correspondence distance -->
+      <!-- <param name="RGBD/AngularUpdate"           type="string" value="0.1"/> -->    <!-- Update map only if the robot is moving -->
+      <!-- <param name="RGBD/LinearUpdate"            type="string" value="0.1"/>  -->  <!-- Update map only if the robot is moving -->
+      <param name="RGBD/ProximityPathMaxNeighbors" type="string" value="0"/> 
+      <param name="Rtabmap/TimeThr"              type="string" value="0"/>
+      <param name="Mem/RehearsalSimilarity"      type="string" value="0.30"/>
+      <!-- <param name="Reg/Force3DoF"                type="string" value="true"/> -->
+      <param name="GridGlobal/MinSize"           type="string" value="20"/>
+
+      <param name="Kp/DetectorStrategy"               type="string" value="8"/>   <!-- default -->
+      <param name="Vis/FeatureType"                   type="string" value="8"/>   <!-- default -->
+
+      <!-- <param name="Kp/DetectorStrategy"               type="string" value="1"/> -->   <!-- SHIFT -->
+      <!-- <param name="Vis/FeatureType"                   type="string" value="1"/> -->  <!-- SHIFT -->
+
+
+      <!-- localization mode -->
+      <param     if="$(arg localization)" name="Mem/IncrementalMemory" type="string" value="false"/>
+      <param unless="$(arg localization)" name="Mem/IncrementalMemory" type="string" value="true"/>
+
+      <!-- add by nishi -->
+      <param name="Odom/FilteringStrategy" value="2"/>   <!-- default=0 0=No filtering 1=Kalman filtering 2=Particle filtering. This filter is used to smooth the odometry output. -->
+      <param name="Odom/ParticleSize" value="350"/>   <!-- default=400 -->
+
+      <!-- <param name="RGBD/OptimizeMaxError"          type="string" value="3.0"/> -->
+      <!-- <param name="RGBD/OptimizeMaxError"          type="string" value="3.1"/> -->
+      <param name="RGBD/OptimizeMaxError"          type="string" value="3.3"/>
+
+      <param name="Grid/DepthDecimation"          type="string" value="3" /> <!-- default 4 add by nishi 2022.3.5 -->
+
+      <!-- RTABMAP_PARAM(Optimizer, Strategy,        int, 0,          "Graph optimization strategy: 0=TORO, 1=g2o, 2=GTSAM and 3=Ceres."); -->
+      <param name="Optimizer/Strategy"          type="string" value="2" />  <!-- default 0 add by nishi 2022.3.5 -->
+
+    </node>
+  </group>
+
+   <group if="$(arg rtabmapviz)" ns="rtabmap">
+    <!-- visualization with rtabmapviz -->
+    <node if="$(arg rtabmapviz)" pkg="rtabmap_ros" type="rtabmapviz" name="rtabmapviz" args="-d $(find rtabmap_ros)/launch/config/rgbd_gui.ini" output="screen">
+      <param name="subscribe_scan"   type="bool"   value="false"/>
+      <param name="subscribe_odom"   type="bool"   value="true"/>
+      <!-- <param name="subscribe_rgbd"   type="bool" value="true"/> -->
+  	  <param name="subscribe_depth"     type="bool"   value="true"/>
+      <param name="frame_id"         type="string" value="base_link"/>
+      <param name="queue_size"          type="int" value="30"/>
+
+      <!-- <param name="wait_for_transform_duration" type="double" value="$(arg wait_for_transform)"/> -->
+      <!-- <param name="approx_sync"      type="bool"   value="true"/> -->
+      <remap from="odom"            to="/odom_fox"/>
+      <remap from="rgb/image"       to="$(arg rgb_topic_comp)"/>
+      <remap from="depth/image"     to="$(arg depth_topic_comp)"/>
+      <remap from="rgb/camera_info" to="$(arg camera_info_topic)"/>
+      <!-- <remap from="scan"            to="/scan"/> -->
+    </node>
+  </group>
+
+  <!-- move_base -->
+  <group if="$(arg PC)">
+    <group if="$(arg move_base)">
+      <include file="$(find turtlebot3_navigation)/launch/move_base_depthai.launch">
+        <arg name="model" value="$(arg model)" />
+        <arg name="move_forward_only" value="$(arg move_forward_only)"/>
+        <arg name="odom_topic" value="/odom_fox" />
+      </include>
+    </group>
+
+    <!-- rviz -->
+    <node if="$(arg open_rviz)" pkg="rviz" type="rviz" name="rviz" required="true"
+            args="-d $(find turtlebot3_navigation)/rviz/turtlebot3_navigation.rviz"/>
+    <node if="$(arg rviz_nishi)" pkg="rviz" type="rviz" name="rviz" args="-d $(find rtabmap_ros_my)/launch/config/nishi-stereoB-navi.rviz"/>
+    <node if="$(arg rviz_tb)" name="rviz" pkg="rviz" type="rviz" args="-d $(find rtabmap_ros)/launch/config/turtlebot_navigation.rviz"/>
+  </group>
+</launch>
