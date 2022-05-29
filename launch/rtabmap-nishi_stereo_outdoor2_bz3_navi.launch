@@ -1,6 +1,7 @@
 <!-- rtabmap-nishi_stereo_outdoor2_bz3_navi.launch -->
 <launch>
    <!--
+      Original is.
       Demo of outdoor stereo mapping. 
       From bag: 
       $ rosbag record 
@@ -14,6 +15,7 @@
       $ rosbag play -.-clock stereo_oudoorA.bag
 
       https://answers.ros.org/question/300345/robot-localization-package-transform-from-base_link-to-odom-was-unavailable-for-the-time-requested-using-latest-instead-imugps/
+      http://wiki.ros.org/rtabmap_ros/Tutorials/Advanced%20Parameter%20Tuning
 
       1) PC
        $ sudo ufw disable / enable / reload
@@ -22,13 +24,18 @@
       2) SBC
        $ sudo chmod 777 /dev/ttyTHS1
        $ sudo ntpdate ntp.nict.jp
-       $ roslaunch turtlebot3_bringup turtlebot3_robot.launch --><!-- screen
+       $ roslaunch turtlebot3_bringup turtlebot3_robot.launch -.- screen
       3) SBC
        $ roslaunch rtabmap_ros_my rtabmap-nishi_stereo_outdoor2_bz3_navi.launch SBC:=true
       4) PC
-       $ roslaunch rtabmap_ros_my rtabmap-nishi_stereo_outdoor2_bz3_navi.launch rtabmapviz:=true
+       $ roslaunch rtabmap_ros_my rtabmap-nishi_stereo_outdoor2_bz3_navi.launch [rtabmapviz:=true]
+
       5) PC
-       $ rosrun ros_start multi_goals4.py
+       $ rosrun turtlebot3_navi_my multi_goals4.py
+      6) PC
+       $ roslaunch turtlebot3_teleop turtlebot3_teleop_key.launch
+      7) PC
+       $ rosrun turtlebot3_navi_my mower_robo4.py
    -->
    <!-- Arguments -->
    <arg name="model" default="$(env TURTLEBOT3_MODEL)" doc="model type [burger, waffle, waffle_pi]"/>
@@ -86,13 +93,13 @@
    <group if="$(arg SBC)">
       <include file="$(find uvc_camera)/launch/single_stereo_nodelet.launch">
       </include>
-      <include file="$(find rtabmap_ros_my)/launch/stereo_image_proc_nishi.launch">
-      <!-- <include file="$(find stereo_image_proc)/launch/stereo_image_proc.launch"> -->
+      <!-- <include file="$(find rtabmap_ros_my)/launch/stereo_image_proc_nishi.launch"> -->
+      <include file="$(find stereo_image_proc)/launch/stereo_image_proc.launch">
          <arg name="manager" value="/camera_process" />
          <!--
-         <arg name="speckle_size" value="520"/>
-         <arg name="speckle_range" value="25"/>
-         <arg name="min_disparity" default="8"/>
+         <arg name="speckle_size" value="5"/>
+         <arg name="speckle_range" value="2"/>
+         <arg name="min_disparity" default="0"/>
          -->
       </include>
 
@@ -174,7 +181,6 @@
          <param name="RGBD/AngularUpdate"           type="string" value="0.1"/>    <!-- Update map only if the robot is moving -->
          <param name="RGBD/LinearUpdate"            type="string" value="0.1"/>    <!-- Update map only if the robot is moving -->
 
-
          <!-- use actionlib to send goals to move_base --> 
          <param name="use_action_for_goal" type="bool" value="true"/>
          <remap from="move_base"            to="/move_base"/>
@@ -182,21 +188,16 @@
          <!--  ~tf_delay (double, default: 0.05) -->
          <!-- <param name="tf_delay" type="double" value="0.8"/> -->
 
-         <!-- <param name="Stereo/MinDisparity"     type="string" value="0.5"/> -->
-         <param if="$(arg localization)" name="Stereo/MinDisparity"     type="string" value="5"/>
+         <param name="Stereo/MinDisparity"     type="string" value="0.5"/>
+         <!-- <param if="$(arg localization)" name="Stereo/MinDisparity"     type="string" value="5"/> -->
          <!-- <param unless="$(arg localization)" name="Stereo/MinDisparity"     type="string" value="70"/> -->
-         <param unless="$(arg localization)" name="Stereo/MinDisparity"     type="string" value="5"/>
+         <!-- <param unless="$(arg localization)" name="Stereo/MinDisparity"     type="string" value="5"/> -->
          <!-- <param name="Stereo/MaxDisparity"     type="string" value="128"/> -->
          <!-- <param name="Stereo/MaxDisparity"     type="string" value="800"/> -->
          <!-- <param name="Stereo/MaxDisparity"     type="string" value="2000"/> -->
-         <param name="Stereo/MaxDisparity"     type="string" value="7000"/>
+         <param name="Stereo/MaxDisparity"     type="string" value="9000"/>
 
          <!-- inputs -->
-         <!-- <remap from="odom" to="/stereo_odometry"/> -->
-         <!--
-         <remap if="$(arg stereo_odometry)" from="odom" to="/stereo_odometry"/>
-         <remap unless="$(arg stereo_odometry)" from="odom"            to="/odom"/>
-         -->
          <remap if="$(arg fusion)" from="odom"     to="/fusion/odom"/>
          <remap unless="$(arg fusion)" from="odom" to="/odom_fox"/>
 
@@ -215,13 +216,13 @@
          <param name="Grid/FlatObstacleDetected"         type="string" value="true"/>
          <param name="Kp/MaxDepth"                       type="string" value="0"/>
          <!-- <param name="Kp/MaxDepth"                       type="string" value="2.0"/> -->
-         <!-- <param name="Kp/DetectorStrategy"               type="string" value="1"/> -->    <!-- SHIFT -->
-         <!-- <param name="Vis/FeatureType"                   type="string" value="1"/> -->   <!-- SHIFT -->
+         <param name="Kp/DetectorStrategy"               type="string" value="1"/>     <!-- SHIFT -->
+         <param name="Vis/FeatureType"                   type="string" value="1"/>    <!-- SHIFT -->
          <!-- <param name="Kp/DetectorStrategy"               type="string" value="2"/> -->   <!-- ORB -->
          <!-- <param name="Kp/DetectorStrategy"               type="string" value="5"/> -->  <!-- GFTT/FREAK -->
          <!-- <param name="Vis/FeatureType"                   type="string" value="5"/> -->  <!-- GFTT/FREAK -->
-         <param name="Kp/DetectorStrategy"               type="string" value="6"/>   <!-- default GFTT/BRIEF -->
-         <param name="Vis/FeatureType"                   type="string" value="6"/>   <!-- default GFTT/BRIEF -->
+         <!-- <param name="Kp/DetectorStrategy"               type="string" value="6"/> -->  <!-- default GFTT/BRIEF -->
+         <!-- <param name="Vis/FeatureType"                   type="string" value="6"/>  --> <!-- default GFTT/BRIEF -->
          <!-- <param name="Kp/DetectorStrategy"               type="string" value="8"/> -->    <!-- soso! GFTT/ORB -->
          <!-- <param name="Vis/FeatureType"                   type="string" value="8"/> -->   <!-- soso! GFTT/ORB -->
          <!-- <param name="Kp/DetectorStrategy"               type="string" value="9"/> -->  <!-- soso! KAZE -->
@@ -242,21 +243,25 @@
          <!-- <param name="RGBD/OptimizeMaxError"          type="string" value="3.0"/> -->
          <!-- <param name="RGBD/OptimizeMaxError"          type="string" value="3.1"/> -->
          <!-- <param name="RGBD/OptimizeMaxError"          type="string" value="3.3"/> -->
-         <param name="RGBD/OptimizeMaxError"          type="string" value="3.4"/>
+         <!-- <param name="RGBD/OptimizeMaxError"          type="string" value="3.4"/> -->
+         <param name="RGBD/OptimizeMaxError"          type="string" value="3.5"/>  <!-- 2022.5.22まで使用 -->
          <param name="RGBD/LinearUpdate"          type="string" value="0"/>
 
          <!-- <param name="proj_max_ground_angle" value="15"/> -->     <!-- Grid/MaxGroundAngle に変わった-->
          <!-- <param name="Grid/MaxGroundAngle" value="30"/> -->  <!-- 上下画角の 上の角度 -->
          <!-- <param name="Grid/MaxGroundAngle" value="35"/> -->  <!-- 上下画角の 上の角度 -->
-         <param name="Grid/MaxGroundAngle" value="40"/>   <!-- 上下画角の 上の角度 -->
+         <param name="Grid/MaxGroundAngle" value="38"/>   <!-- 上下画角の 上の角度 -->
 
          <!-- <param name="Odom/Strategy" value="1"/>  NG -->
-         <param name="Odom/FilteringStrategy" value="2"/>   <!-- default=0 0=No filtering 1=Kalman filtering 2=Particle filtering. This filter is used to smooth the odometry output. -->
-         <param name="Odom/ParticleSize" value="350"/>   <!-- default=400 -->
+         <param name="Odom/FilteringStrategy" value="1"/>   <!-- default=0 0=No filtering 1=Kalman filtering 2=Particle filtering. This filter is used to smooth the odometry output. -->
+         <param name="Odom/ParticleSize" value="380"/>   <!-- default=400 -->
          <!--
          <param name="wait_imu_to_init" type="bool" value="true"/>
          <remap from="imu"  to="/imu"/>
          -->
+
+         <!-- <param name="Reg/Force3DoF" value="true"/> -->
+         <!-- <param name="Optimizer/Slam2D" value="true" /> -->   <!--  これは、無いみたい。 Reg/Force3DoF に置き換わるとの事 -->
       </node>
    </group>
   
@@ -286,13 +291,12 @@
    <group unless="$(arg SBC)">
       <group if="$(arg move_base)">
          <!-- move_base -->
-         <include file="$(find turtlebot3_navigation)/launch/move_base_foxbot.launch">
+         <!-- <include file="$(find turtlebot3_navi_my)/launch/move_base_foxbot.launch"> -->
+         <include file="$(find turtlebot3_navi_my)/launch/move_base_foxbot_eband.launch">
             <arg name="model" value="$(arg model)" />
             <arg name="move_forward_only" value="$(arg move_forward_only)"/>
             <!-- odom を変えられみたい。-->
-            <!-- <arg if="$(arg fusion)" name="odom_topic" value="/stereo_camera/fusion/odom" /> -->
             <arg if="$(arg fusion)" name="odom_topic" value="/fusion/odom" />
-            <!-- <arg if="$(arg fusion)" name="odom_topic" value="/odom" /> -->
             <arg unless="$(arg fusion)" name="odom_topic" value="/odom_fox" />
          </include>
       </group>
