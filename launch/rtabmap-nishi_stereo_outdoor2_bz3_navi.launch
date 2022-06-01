@@ -291,13 +291,13 @@
    <group unless="$(arg SBC)">
       <group if="$(arg move_base)">
          <!-- move_base -->
-         <!-- <include file="$(find turtlebot3_navi_my)/launch/move_base_foxbot.launch"> -->
-         <include file="$(find turtlebot3_navi_my)/launch/move_base_foxbot_eband.launch">
+         <include file="$(find turtlebot3_navi_my)/launch/move_base_foxbot.launch">
             <arg name="model" value="$(arg model)" />
             <arg name="move_forward_only" value="$(arg move_forward_only)"/>
             <!-- odom を変えられみたい。-->
             <arg if="$(arg fusion)" name="odom_topic" value="/fusion/odom" />
             <arg unless="$(arg fusion)" name="odom_topic" value="/odom_fox" />
+            <arg name="EBAND" value="true" />
          </include>
       </group>
 
