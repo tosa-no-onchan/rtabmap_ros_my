@@ -26,12 +26,14 @@
        $ sudo ntpdate ntp.nict.jp
        $ roslaunch turtlebot3_bringup turtlebot3_robot.launch -.- screen
       3) SBC
-       $ roslaunch rtabmap_ros_my rtabmap-nishi_stereo_outdoor2_bz3_navi.launch SBC:=true
+       $ roslaunch rtabmap_ros_my rtabmap-nishi_stereo_outdoor2_bz3_navi.launch SBC:=true move_base:=false
       4) PC
-       $ roslaunch rtabmap_ros_my rtabmap-nishi_stereo_outdoor2_bz3_navi.launch [rtabmapviz:=true]
+       $ roslaunch rtabmap_ros_my rtabmap-nishi_stereo_outdoor2_bz3_navi.launch move_base:=false [rtabmapviz:=true]
 
       5) PC
        $ rosrun turtlebot3_navi_my multi_goals4.py
+       $ rosrun turtlebot3_navi_my multi_goals4_cmd_vel.py
+       $ rosrun turtlebot3_navi_my cmd_vel2.py
       6) PC
        $ roslaunch turtlebot3_teleop turtlebot3_teleop_key.launch
       7) PC
