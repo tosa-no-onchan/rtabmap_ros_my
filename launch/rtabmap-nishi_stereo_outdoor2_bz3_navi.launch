@@ -24,20 +24,27 @@
       2) SBC
        $ sudo chmod 777 /dev/ttyTHS1
        $ sudo ntpdate ntp.nict.jp
-       $ roslaunch turtlebot3_bringup turtlebot3_robot.launch -.- screen
+       $ roslaunch turtlebot3_bringup turtlebot3_robot.launch -.-screen
       3) SBC
-       $ roslaunch rtabmap_ros_my rtabmap-nishi_stereo_outdoor2_bz3_navi.launch SBC:=true move_base:=false
+       $ roslaunch rtabmap_ros_my rtabmap-nishi_stereo_outdoor2_bz3_navi.launch SBC:=true
       4) PC
-       $ roslaunch rtabmap_ros_my rtabmap-nishi_stereo_outdoor2_bz3_navi.launch move_base:=false [rtabmapviz:=true]
-
+       $ roslaunch rtabmap_ros_my rtabmap-nishi_stereo_outdoor2_bz3_navi.launch PC:=true [rtabmapviz:=true]
       5) PC
+       $ roslaunch rtabmap_ros_my rtabmap-nishi_stereo_outdoor2_bz3_navi.launch robo_navi:=true
+
+      6) PC
        $ rosrun turtlebot3_navi_my multi_goals4.py
        $ rosrun turtlebot3_navi_my multi_goals4_cmd_vel.py
        $ rosrun turtlebot3_navi_my cmd_vel2.py
-      6) PC
-       $ roslaunch turtlebot3_teleop turtlebot3_teleop_key.launch
       7) PC
+       $ roslaunch turtlebot3_teleop turtlebot3_teleop_key.launch
+      8) PC
        $ rosrun turtlebot3_navi_my mower_robo4.py
+
+      9) PC
+       $ rosrun turtlebot3_navi_my drive_base
+
+
    -->
    <!-- Arguments -->
    <arg name="model" default="$(env TURTLEBOT3_MODEL)" doc="model type [burger, waffle, waffle_pi]"/>
@@ -55,10 +62,14 @@
 
    <arg name="stereo_sync" default="true" />
 
-   <arg name="move_base" default="true"/>
+   <arg name="move_base" default="false"/>
+   <arg name="move_navigation" default="false"/>
+   <arg name="robo_navi" default="false"/>
 
    <arg name="SBC" default="false"/>
    <arg name="SBCX" default="false"/>
+   <arg name="PC" default="false"/>
+
    <arg name="mode" default="mode1"/>
    <arg name="fusion" default="false"/>
    <arg name="obstacles" default="false"/>
@@ -76,15 +87,15 @@
 
    <group if="$(arg SBC)">
       <node pkg="tf" type="static_transform_publisher" name="camera_base_link"
-         args="$(arg optical_rotate) $(arg BASE_LINK) stereo_camera 100" />  
+         args="$(arg optical_rotate) $(arg BASE_LINK) stereo_camera 30" />  
       <node pkg="tf" type="static_transform_publisher" name="camera2_base_link"
-            args="0 0 0 0 0 0 stereo_camera source_frame 100" /> 
+            args="0 0 0 0 0 0 stereo_camera source_frame 30" /> 
       <node pkg="tf" type="static_transform_publisher" name="camera3_base_link"
-            args="0 0 0 0 0 0 source_frame camera 100" /> 
+            args="0 0 0 0 0 0 source_frame camera 30" /> 
    </group>
 
    <!-- Turtlebot3 -->
-   <group unless="$(arg SBC)">
+   <group if="$(arg PC)">
       <include file="$(find turtlebot3_bringup)/launch/turtlebot3_remote.launch">
          <arg name="model" value="$(arg model)" />
          <!-- turtlebot3/turtlebot3_description/urdf/turtlebot3_waffle.urdf.xacro -->
@@ -290,7 +301,7 @@
       </node>
    </group>
 
-   <group unless="$(arg SBC)">
+   <group if="$(arg PC)">
       <group if="$(arg move_base)">
          <!-- move_base -->
          <include file="$(find turtlebot3_navi_my)/launch/move_base_foxbot.launch">
@@ -299,12 +310,25 @@
             <!-- odom を変えられみたい。-->
             <arg if="$(arg fusion)" name="odom_topic" value="/fusion/odom" />
             <arg unless="$(arg fusion)" name="odom_topic" value="/odom_fox" />
-            <arg name="EBAND" value="true" />
+            <arg name="EBAND" value="false" />
          </include>
       </group>
+
+      <!-- move_navigation -->
+      <node if="$(arg move_navigation)" pkg="turtlebot3_navi_my" type="turtlebot3_navi_my_move_navigation" name="turtlebot3_navi_my_move_navigation" output="screen">
+         <rosparam command="load" file="$(find turtlebot3_navi_my)/param_foxbot/move_navigation_point_cloud2.yaml" />
+      </node>
 
       <!-- Visualisation RVIZ --> 
       <node if="$(arg rviz)" pkg="rviz" type="rviz" name="rviz" args="-d $(find rtabmap_ros)/launch/config/demo_stereo_outdoor.rviz"/>
       <node if="$(arg rviz_nishi)" pkg="rviz" type="rviz" name="rviz" args="-d $(find rtabmap_ros_my)/launch/config/nishi-stereoB-navi.rviz"/>
    </group>
+
+   <group if="$(arg robo_navi)" >
+      <!-- move_navigation -->
+      <node pkg="turtlebot3_navi_my" type="multi_goals4_cmd_vel" name="multi_goals4_cmd_vel" output="screen">
+         <rosparam command="load" file="$(find turtlebot3_navi_my)/param_foxbot/move_navigation_point_cloud2.yaml" />
+      </node>
+   </group> 
+
 </launch>
