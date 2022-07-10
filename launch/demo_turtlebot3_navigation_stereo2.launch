@@ -11,7 +11,8 @@
       1)
        $ export TURTLEBOT3_MODEL=burger
        //$ roslaunch turtlebot3_gazebo turtlebot3_world.launch
-       $ roslaunch turtlebot3_gazebo turtlebot3_world_nav_nishi2.launch
+       //$ roslaunch turtlebot3_gazebo turtlebot3_house.launch
+       $ roslaunch turtlebot3_gazebo turtlebot3_world_nav_nishi2.launch gass:=true
        // turtlebot3/turtlebot3_description/urdf/turtleboot3_burger.urdf.xacro  ここに記述されている。
        //  末尾の stereo_camera_macro を有効にする事
 
@@ -23,7 +24,7 @@
        $ export TURTLEBOT3_MODEL=burger
        $ roslaunch rtabmap_ros_my demo_turtlebot3_navigation_stereo2.launch PC:=true [localization:=true]
 
-      4)
+      4) run multi_goals4_cmd_vel
        $ export TURTLEBOT3_MODEL=burger
        $ roslaunch rtabmap_ros_my demo_turtlebot3_navigation_stereo2.launch robo_navi:=true [localization:=true]
 
@@ -38,7 +39,6 @@
        $ rosrun turtlebot3_navi_my mower_robo4.py
       8) PC
        $ rosrun turtlebot3_navi_my drive_base
-       $ rosrun turtlebot3_navi_my multi_goals4_cmd_vel
 
   -->
 
@@ -143,6 +143,8 @@
         <remap from="right/image_raw" to="right/image_raw" />
         <remap from="right/camera_info" to="right/camera_info" />
         <!-- <param name="disparity_range" value="128"/> -->
+        <!-- <param name="min_disparity" value="0"/> -->  <!-- default = 0 で OK -->
+
     </node>>
 
     <node pkg="nodelet" type="nodelet" name="camera_process" args="manager" output="screen"/>
@@ -241,8 +243,8 @@
         <param name="Rtabmap/TimeThr"                   type="string" value="0"/>
         <param name="Grid/DepthDecimation"              type="string" value="4"/>
         <param name="Grid/FlatObstacleDetected"         type="string" value="true"/>
-        <param name="Kp/MaxDepth"                       type="string" value="0"/>
-        <!-- <param name="Kp/MaxDepth"                       type="string" value="2.0"/> -->
+        <!-- <param name="Kp/MaxDepth"                       type="string" value="0"/> -->
+        <param name="Kp/MaxDepth"                       type="string" value="3.5"/>
         <!-- <param name="Kp/DetectorStrategy"               type="string" value="1"/> -->    <!-- SHIFT -->
         <!-- <param name="Vis/FeatureType"                   type="string" value="1"/> -->  <!-- SHIFT -->
         <!-- <param name="Kp/DetectorStrategy"               type="string" value="2"/> -->   <!-- ORB -->
@@ -256,8 +258,8 @@
         <!--- <param name="Kp/DetectorStrategy"               type="string" value="10"/> -->  <!-- not good ORB-OCTREE -->
         <!-- <param name="Vis/EstimationType"                type="string" value="1"/> -->  <!-- 0=3D->3D, 1=3D->2D (PnP) -->
         <param name="Vis/EstimationType"                type="string" value="1"/>   <!-- 0=3D->3D, 1=3D->2D (PnP) -->
-        <param name="Vis/MaxDepth"                      type="string" value="0"/>
-        <!-- <param name="Vis/MaxDepth"                      type="string" value="2.0"/> -->
+        <!-- <param name="Vis/MaxDepth"                      type="string" value="0"/> -->
+        <param name="Vis/MaxDepth"                      type="string" value="3.5"/>
         <param name="RGBD/CreateOccupancyGrid"          type="string" value="true"/>   
 
         <!-- add by nishi --> 
@@ -275,9 +277,10 @@
         <param name="RGBD/LinearUpdate"          type="string" value="0"/>
 
         <!-- <param name="proj_max_ground_angle" value="15"/> -->     <!-- Grid/MaxGroundAngle に変わった-->
-        <!-- <param name="Grid/MaxGroundAngle" value="30"/> -->  <!-- 上下画角の 上の角度 -->
+        <param name="Grid/MaxGroundAngle" value="20"/>  <!-- 上下画角の 上の角度 -->
+        <!-- <param name="Grid/MaxGroundAngle" value="30"/> --> <!-- 上下画角の 上の角度 -->
         <!-- <param name="Grid/MaxGroundAngle" value="35"/> -->  <!-- 上下画角の 上の角度 -->
-        <param name="Grid/MaxGroundAngle" value="38"/>   <!-- 上下画角の 上の角度 -->
+        <!-- <param name="Grid/MaxGroundAngle" value="38"/> -->  <!-- 上下画角の 上の角度 -->
 
         <!-- <param name="Odom/Strategy" value="1"/>  NG -->
         <param name="Odom/FilteringStrategy" value="1"/>   <!-- default=0 0=No filtering 1=Kalman filtering 2=Particle filtering. This filter is used to smooth the odometry output. -->
@@ -320,7 +323,7 @@
   <group if="$(arg robo_navi)" >
     <!-- move_navigation -->
     <node pkg="turtlebot3_navi_my" type="multi_goals4_cmd_vel" name="multi_goals4_cmd_vel" output="screen">
-        <rosparam command="load" file="$(find turtlebot3_navi_my)/param_foxbot/move_navigation_point_cloud2.yaml" />
+        <rosparam command="load" file="$(find turtlebot3_navi_my)/param_demo/move_navigation_point_cloud2.yaml" />
     </node>
   </group> 
 
