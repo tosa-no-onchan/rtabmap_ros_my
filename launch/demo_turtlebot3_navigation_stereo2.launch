@@ -203,8 +203,8 @@
 
         <param name="queue_size" type="int" value="30"/>
         <!-- <param name="map_negative_poses_ignored" type="bool" value="true"/> -->
-        <param name="map_always_update" type="bool" value="false"/>
-        <!-- <param name="map_always_update" type="bool" value="true"/> -->
+        <!-- <param name="map_always_update" type="bool" value="false"/> -->
+        <param name="map_always_update" type="bool" value="true"/>
         
         <!-- add by nishi 2022.1.15 -->
         <param name="RGBD/AngularUpdate"           type="string" value="0.1"/>    <!-- Update map only if the robot is moving -->
@@ -217,7 +217,8 @@
         <!--  ~tf_delay (double, default: 0.05) -->
         <!-- <param name="tf_delay" type="double" value="0.8"/> -->
 
-        <param name="Stereo/MinDisparity"     type="string" value="0.5"/>
+        <!-- <param name="Stereo/MinDisparity"     type="string" value="0.5"/> -->
+        <param name="Stereo/MinDisparity"     type="string" value="5"/>   <!-- 2022.7.13 -->
         <!-- <param if="$(arg localization)" name="Stereo/MinDisparity"     type="string" value="5"/> -->
         <!-- <param unless="$(arg localization)" name="Stereo/MinDisparity"     type="string" value="70"/> -->
         <!-- <param unless="$(arg localization)" name="Stereo/MinDisparity"     type="string" value="5"/> -->
@@ -277,10 +278,11 @@
         <param name="RGBD/LinearUpdate"          type="string" value="0"/>
 
         <!-- <param name="proj_max_ground_angle" value="15"/> -->     <!-- Grid/MaxGroundAngle に変わった-->
-        <param name="Grid/MaxGroundAngle" value="20"/>  <!-- 上下画角の 上の角度 -->
+        <!-- <param name="Grid/MaxGroundAngle" value="20"/> --> <!-- 上下画角の 上の角度 -->
         <!-- <param name="Grid/MaxGroundAngle" value="30"/> --> <!-- 上下画角の 上の角度 -->
         <!-- <param name="Grid/MaxGroundAngle" value="35"/> -->  <!-- 上下画角の 上の角度 -->
-        <!-- <param name="Grid/MaxGroundAngle" value="38"/> -->  <!-- 上下画角の 上の角度 -->
+        <param name="Grid/MaxGroundAngle" value="38"/>  <!-- 上下画角の 上の角度 2022.7.13 -->
+        <param name="Grid/MaxObstacleHeight" type="string" value="1.0"/>    <!-- default 0.0 2022.7.13 -->
 
         <!-- <param name="Odom/Strategy" value="1"/>  NG -->
         <param name="Odom/FilteringStrategy" value="1"/>   <!-- default=0 0=No filtering 1=Kalman filtering 2=Particle filtering. This filter is used to smooth the odometry output. -->
