@@ -8,3 +8,8 @@ $ cd ~catkin_ws/src
 $ git clone https://github.com/tosa-no-onchan/rtabmap_ros_my.git    
 $ cd ..    
 $ catkin_make    
+    
+Update.    
+    
+    2022.7.15    
+        support ros noetic    
