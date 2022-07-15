@@ -29,7 +29,8 @@
        $ roslaunch rtabmap_ros_my rtabmap-nishi_stereo_outdoor2_bz3_navi.launch SBC:=true
       4) PC
        $ roslaunch rtabmap_ros_my rtabmap-nishi_stereo_outdoor2_bz3_navi.launch PC:=true [rtabmapviz:=true]
-      5) PC
+
+      5) PC run multi_goals4_cmd_vel
        $ roslaunch rtabmap_ros_my rtabmap-nishi_stereo_outdoor2_bz3_navi.launch robo_navi:=true
 
       6) PC
@@ -201,7 +202,8 @@
          <!--  ~tf_delay (double, default: 0.05) -->
          <!-- <param name="tf_delay" type="double" value="0.8"/> -->
 
-         <param name="Stereo/MinDisparity"     type="string" value="0.5"/>
+         <!-- <param name="Stereo/MinDisparity"     type="string" value="0.5"/> -->  <!-- 2022.7.11 まで使用 -->
+         <param name="Stereo/MinDisparity"     type="string" value="10"/> 
          <!-- <param if="$(arg localization)" name="Stereo/MinDisparity"     type="string" value="5"/> -->
          <!-- <param unless="$(arg localization)" name="Stereo/MinDisparity"     type="string" value="70"/> -->
          <!-- <param unless="$(arg localization)" name="Stereo/MinDisparity"     type="string" value="5"/> -->
@@ -264,6 +266,7 @@
          <!-- <param name="Grid/MaxGroundAngle" value="30"/> -->  <!-- 上下画角の 上の角度 -->
          <!-- <param name="Grid/MaxGroundAngle" value="35"/> -->  <!-- 上下画角の 上の角度 -->
          <param name="Grid/MaxGroundAngle" value="38"/>   <!-- 上下画角の 上の角度 -->
+         <param name="Grid/MaxObstacleHeight" type="string" value="1.0"/>    <!-- default 0.0 2022.7.13 -->
 
          <!-- <param name="Odom/Strategy" value="1"/>  NG -->
          <param name="Odom/FilteringStrategy" value="1"/>   <!-- default=0 0=No filtering 1=Kalman filtering 2=Particle filtering. This filter is used to smooth the odometry output. -->
