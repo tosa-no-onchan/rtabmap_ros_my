@@ -80,6 +80,9 @@
    <!-- <param name="use_sim_time" type="bool" value="True"/> -->
    <param name="use_sim_time" type="bool" value="False"/>
 
+   <!-- <arg name="prog" default="multi_goals4_cmd_vel"/> -->
+   <arg name="prog" default="turtlebot3_navi_my_map_builder"/>
+
    <!-- 180[d] -->
    <arg name="pi/2" value="1.5707963267948966" />
 
@@ -329,7 +332,7 @@
 
    <group if="$(arg robo_navi)" >
       <!-- move_navigation -->
-      <node pkg="turtlebot3_navi_my" type="multi_goals4_cmd_vel" name="multi_goals4_cmd_vel" output="screen">
+      <node pkg="turtlebot3_navi_my" type="$(arg prog)" name="$(arg prog)" output="screen">
          <rosparam command="load" file="$(find turtlebot3_navi_my)/param_foxbot/move_navigation_point_cloud2.yaml" />
       </node>
    </group> 

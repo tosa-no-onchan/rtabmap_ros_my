@@ -1,21 +1,33 @@
 <!-- demo_turtlebot3_navigation_nishi2.launch -->
 <launch>
   <!--
+    Gazebo Turtlebot3/waffle and Rtabmap_ros with rgbd-camera
     $ sudo apt install ros-melodic-turtlebot3* ros-melodic-dwa-local-planner
     To avoid TF warning about leading '/' in frame name, remove it in:
        - "/opt/ros/melodic/share/turtlebot3_navigation/param/global_costmap_params.yaml"
        - "/opt/ros/melodic/share/turtlebot3_navigation/param/local_costmap_params.yaml"
 
     Example Gazebo:
-    $ export TURTLEBOT3_MODEL=waffle
-    //$ roslaunch turtlebot3_gazebo turtlebot3_world.launch
-    $ roslaunch turtlebot3_gazebo turtlebot3_world_nav_nishi2.launch
+    I.
+      1)
+       $ export TURTLEBOT3_MODEL=waffle or burger
+       //$ roslaunch turtlebot3_gazebo turtlebot3_world.launch
+       //$ roslaunch turtlebot3_gazebo turtlebot3_house.launch
+       $ roslaunch turtlebot3_gazebo turtlebot3_world_nav_nishi2.launch gass:=true
+       // turtlebot3/turtlebot3_description/urdf/turtleboot3_waffle.urdf.xacro  ここに記述されている。
 
-    $ export TURTLEBOT3_MODEL=waffle
-    $ roslaunch rtabmap_ros_my demo_turtlebot3_navigation_nishi2.launch SBC:=true move_base:=false [localization:=true]
+      2)
+       $ export TURTLEBOT3_MODEL=waffle or burger
+       $ roslaunch rtabmap_ros_my demo_turtlebot3_navigation_nishi2.launch SBC:=true [localization:=true]
 
-    $ export TURTLEBOT3_MODEL=waffle
-    $ roslaunch rtabmap_ros_my demo_turtlebot3_navigation_nishi2.launch PC:=true move_base:=false [localization:=true]
+      3)
+       $ export TURTLEBOT3_MODEL=waffle or burger
+       $ roslaunch rtabmap_ros_my demo_turtlebot3_navigation_nishi2.launch PC:=true [localization:=true]
+
+
+      4) run multi_goals4_cmd_vel
+       $ export TURTLEBOT3_MODEL=waffle or burger
+       $ roslaunch rtabmap_ros_my demo_turtlebot3_navigation_nishi2.launch robo_navi:=true [localization:=true]
 
       5) PC
        $ rosrun turtlebot3_navi_my multi_goals4.py
@@ -25,6 +37,35 @@
        $ roslaunch turtlebot3_teleop turtlebot3_teleop_key.launch
       7) PC
        $ rosrun turtlebot3_navi_my mower_robo4.py
+       
+      8) PC
+       $ rosrun turtlebot3_navi_my drive_base
+       $ rosrun turtlebot3_navi_my multi_goals4_cmd_vel
+      
+
+      Debug
+      gdb devel/lib/turtlebot3_navi_my/turtlebot3_navi_my_map_builder
+
+
+    II. how to run multi_goals4_move_base
+      1)
+       $ export TURTLEBOT3_MODEL=waffle or burger
+       //$ roslaunch turtlebot3_gazebo turtlebot3_world.launch
+       //$ roslaunch turtlebot3_gazebo turtlebot3_house.launch
+       $ roslaunch turtlebot3_gazebo turtlebot3_world_nav_nishi2.launch gass:=true
+       // turtlebot3/turtlebot3_description/urdf/turtleboot3_waffle.urdf.xacro  ここに記述されている。
+
+      2)
+       $ export TURTLEBOT3_MODEL=waffle or burger
+       $ roslaunch rtabmap_ros_my demo_turtlebot3_navigation_nishi2.launch SBC:=true move_base:=true [localization:=true]
+
+      3)
+       $ export TURTLEBOT3_MODEL=waffle or burger
+       $ roslaunch rtabmap_ros_my demo_turtlebot3_navigation_nishi2.launch PC:=true move_base:=true [localization:=true]
+
+      4) PC
+       $ rosrun turtlebot3_navi_my multi_goals4_move_base
+
 
   -->
 
@@ -38,13 +79,21 @@
 
   <arg name="SBC" default="false"/>
   <arg name="PC" default="false"/>
-  <arg name="move_base" default="true"/>
+  <arg name="move_base" default="false"/>
+  <arg name="move_navigation" default="false"/>
+  <arg name="robo_navi" default="false"/>
+
+  <arg name="not_run" default="false"/>
 
   <arg name="with_camera" default="true"/>
   <arg name="localization" default="false"/>
   <arg name="database_path" default="~/.ros/rtabmap.db"/>
   <arg     if="$(arg localization)" name="rtabmap_args" default=""/>
   <arg unless="$(arg localization)" name="rtabmap_args" default="-d"/>
+
+  <arg name="BASE_LINK" default="base_link"/>
+  <arg name="eband" default="false"/>
+  <arg name="teb" default="false"/>
 
 
   <arg name="simulation"        default="true"/>
@@ -56,10 +105,34 @@
 
   <arg name="wait_for_transform"  default="0.2"/> 
 
+  <!-- <arg name="prog" default="multi_goals4_cmd_vel"/> -->
+  <arg name="prog" default="turtlebot3_navi_my_map_builder"/>
+
   <!-- Turtlebot3 -->
   <include if="$(arg PC)" file="$(find turtlebot3_bringup)/launch/turtlebot3_remote.launch">
     <arg name="model" value="$(arg model)" />
   </include>
+
+  <group if="$(arg SBC)">
+    <node pkg="nodelet" type="nodelet" name="camera_process" args="manager" output="screen"/>
+
+		<!-- Create point cloud for the planner -->
+		<node pkg="nodelet" type="nodelet" name="disparity2cloud" args="load rtabmap_ros/point_cloud_xyz /camera_process">
+			<!-- <remap from="disparity/image"       to="/stereo_camera/disparity"/>
+			<remap from="disparity/camera_info" to="/stereo_camera/right/camera_info"/> -->
+
+			<remap from="depth/image"       to="$(arg depth_topic)"/>
+			<remap from="depth/camera_info" to="$(arg camera_info_topic)"/>
+
+			<remap from="cloud"                 to="cloudXYZ"/>   <!-- frame_id: camera_rgb_optical_frame -->
+			
+			<param name="voxel_size" type="double" value="0.05"/>
+			<param name="decimation" type="int" value="4"/>
+			<param name="max_depth" type="double" value="4"/>
+		</node>
+
+  </group>
+
 
   <group if="$(arg SBC)" ns="rtabmap">
     <!--
@@ -87,8 +160,8 @@
 
       <param name="queue_size" type="int" value="30"/>
       <!-- <param name="map_negative_poses_ignored" type="bool" value="true"/> -->
-      <param name="map_always_update" type="bool" value="false"/>
-      <!-- <param name="map_always_update" type="bool" value="true"/> -->
+      <!-- <param name="map_always_update" type="bool" value="false"/> -->
+      <param name="map_always_update" type="bool" value="true"/>
 
       <!-- use actionlib to send goals to move_base --> 
       <param name="use_action_for_goal" type="bool" value="true"/>
@@ -111,7 +184,8 @@
       <!-- RTAB-Map's parameters: do "rosrun rtabmap rtabmap (double-dash)params" to see the list of available parameters. -->
       <param name="RGBD/ProximityBySpace"        type="string" value="true"/>   <!-- Local loop closure detection (using estimated position) with locations in WM -->
       <param name="RGBD/OptimizeFromGraphEnd"    type="string" value="false"/>  <!-- Set to false to generate map correction between /map and /odom -->
-      <param name="Kp/MaxDepth"                  type="string" value="4.0"/>
+      <!-- <param name="Kp/MaxDepth"                  type="string" value="4.0"/> -->
+      <param name="Kp/MaxDepth"                  type="string" value="5.0"/>
       <param name="Reg/Strategy"                 type="string" value="0"/>      <!-- Loop closure transformation: 0=Visual, 1=ICP, 2=Visual+ICP -->
       <param name="Icp/CorrespondenceRatio"      type="string" value="0.3"/>
       <param name="Vis/MinInliers"               type="string" value="15"/>      <!-- 3D visual words minimum inliers to accept loop closure -->
@@ -124,8 +198,17 @@
       <param name="Reg/Force3DoF"                type="string" value="true"/>
       <param name="GridGlobal/MinSize"           type="string" value="20"/>
 
+      <!-- RGBD/OptimizeMaxError 3.0 -->
+      <!-- <param name="RGBD/OptimizeMaxError"          type="string" value="3.3"/> -->  <!-- 2022.8.5 変更 -->
+
       <param name="Kp/DetectorStrategy"               type="string" value="8"/>   <!-- default -->
       <param name="Vis/FeatureType"                   type="string" value="8"/>   <!-- default -->
+
+      <!-- add by nishi -->
+      <param name="Grid/MaxObstacleHeight" type="string" value="1.0"/>    <!-- default 0.0 2022.7.13 -->
+      <!-- <param name="Grid/DepthDecimation"   type="string" value="3"/> -->
+      <!-- <param name="Grid/MinGroundHeight" type="string" value="0.05"/> NG -->  <!-- default 0.0 2022.8.5 -->
+
 
       <!-- localization mode -->
       <param     if="$(arg localization)" name="Mem/IncrementalMemory" type="string" value="false"/>
@@ -156,8 +239,15 @@
     <include if="$(arg move_base)" file="$(find turtlebot3_navi_my)/launch/move_base_depth.launch">
       <arg name="model" value="$(arg model)" />
       <arg name="move_forward_only" value="$(arg move_forward_only)"/>
-      <arg name="EBAND" value="false" />
+      <arg name="EBAND" value="$(arg eband)" />
+      <!-- <arg name="TEB" value="$(arg teb)" /> -->
     </include>
+
+    <!-- move_navigation -->
+    <node if="$(arg move_navigation)" pkg="turtlebot3_navi_my" type="turtlebot3_navi_my_move_navigation" name="turtlebot3_navi_my_move_navigation" output="screen">
+      <rosparam command="load" file="$(find turtlebot3_navi_my)/param_demo_depth/$(arg model)_move_navigation_point_cloud2.yaml" />
+    </node>
+
 
     <!-- rviz -->
     <node if="$(arg open_rviz)" pkg="rviz" type="rviz" name="rviz" required="true"
@@ -168,5 +258,13 @@
     <node if="$(arg rviz_tb)" name="rviz" pkg="rviz" type="rviz" args="-d $(find rtabmap_ros)/launch/config/turtlebot_navigation.rviz"/>
 
   </group>
+
+
+  <group if="$(arg robo_navi)" >
+    <!-- move_navigation -->
+    <node pkg="turtlebot3_navi_my" type="$(arg prog)" name="$(arg prog)" output="screen">
+        <rosparam command="load" file="$(find turtlebot3_navi_my)/param_demo_depth/$(arg model)_move_navigation_point_cloud2.yaml" />
+    </node>
+  </group> 
 
 </launch>

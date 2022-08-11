@@ -88,6 +88,10 @@
 
   <arg name="test1" default="false"/>
 
+
+  <!-- <arg name="prog" default="multi_goals4_cmd_vel"/> -->
+  <arg name="prog" default="turtlebot3_navi_my_map_builder"/>
+
   <group if="$(arg SBC)">
       <!-- 180[d] -->
       <arg name="pi/2" value="1.5707963267948966" />
@@ -244,6 +248,8 @@
         <param name="Rtabmap/TimeThr"                   type="string" value="0"/>
         <param name="Grid/DepthDecimation"              type="string" value="4"/>
         <param name="Grid/FlatObstacleDetected"         type="string" value="true"/>
+
+
         <!-- <param name="Kp/MaxDepth"                       type="string" value="0"/> -->
         <param name="Kp/MaxDepth"                       type="string" value="3.5"/>
         <!-- <param name="Kp/DetectorStrategy"               type="string" value="1"/> -->    <!-- SHIFT -->
@@ -284,6 +290,13 @@
         <param name="Grid/MaxGroundAngle" value="38"/>  <!-- 上下画角の 上の角度 2022.7.13 -->
         <param name="Grid/MaxObstacleHeight" type="string" value="1.0"/>    <!-- default 0.0 2022.7.13 -->
 
+        <!-- <param name="Grid/MinGroundHeight" type="string" value="0.0"/> -->   <!-- default 0.0 2022.7.13 -->
+        <param name="Grid/MinGroundHeight" type="string" value="0.05"/>   <!-- default 0.0 2022.7.13 -->
+        <!-- <param name="Grid/MaxGroundHeight" type="string" value="0.02"/> -->   <!-- default 0.0 2022.7.13 -->
+
+        <!-- Grid, GroundIsObstacle -->
+        <!-- <param name="Grid/GroundIsObstacle" type="bool" value="true"/> -->
+
         <!-- <param name="Odom/Strategy" value="1"/>  NG -->
         <param name="Odom/FilteringStrategy" value="1"/>   <!-- default=0 0=No filtering 1=Kalman filtering 2=Particle filtering. This filter is used to smooth the odometry output. -->
         <param name="Odom/ParticleSize" value="380"/>   <!-- default=400 -->
@@ -312,7 +325,7 @@
 
     <!-- move_navigation -->
     <node if="$(arg move_navigation)" pkg="turtlebot3_navi_my" type="turtlebot3_navi_my_move_navigation" name="turtlebot3_navi_my_move_navigation" output="screen">
-        <rosparam command="load" file="$(find turtlebot3_navi_my)/param_move_base/move_navigation_point_cloud2.yaml" />
+        <rosparam command="load" file="$(find turtlebot3_navi_my)/param_demo_stereo/move_navigation_point_cloud2.yaml" />
     </node>
 
     <!-- rviz -->
@@ -324,8 +337,8 @@
 
   <group if="$(arg robo_navi)" >
     <!-- move_navigation -->
-    <node pkg="turtlebot3_navi_my" type="multi_goals4_cmd_vel" name="multi_goals4_cmd_vel" output="screen">
-        <rosparam command="load" file="$(find turtlebot3_navi_my)/param_demo/move_navigation_point_cloud2.yaml" />
+    <node pkg="turtlebot3_navi_my" type="$(arg prog)" name="$(arg prog)" output="screen">
+        <rosparam command="load" file="$(find turtlebot3_navi_my)/param_demo_stereo/$(arg model)_move_navigation_point_cloud2.yaml" />
     </node>
   </group> 
 
