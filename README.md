@@ -1,15 +1,16 @@
-# rtabmap_ros_my
+## rtabmap_ros_my for Ros2 foxy
     
-自作 Turtlebot3(foxbot_core3.ino) で、自作 Stereo Camera , OAK-D-Lite を使って    
+ROS2 対応 自作 Turtlebot3(foxbot_core3_r2.ino) で、 Single USB Stereo Camera を使って    
 rtabmap_ros が実行できる、 launch ファイル。    
     
-1. インストール方法    
-$ cd ~catkin_ws/src    
-$ git clone https://github.com/tosa-no-onchan/rtabmap_ros_my.git    
-$ cd ..    
-$ catkin_make    
+##### 1. インストール方法    
+
+    $ cd ~colcon_ws/src    
+    $ git clone https://github.com/tosa-no-onchan/rtabmap_ros_my.git    
+    $ cd ..    
+    $ colcon build --symlink-install --parallel-workers 1 --packages-select rtabmap_ros_my    
     
-Update.    
+#### Update.    
     
-    2022.7.15    
-        support ros noetic    
+    2022.12.18    
+        support ros2 foxy    
