@@ -1,0 +1,74 @@
+### ekf config file ###
+# https://github.com/cra-ros-pkg/robot_localization/blob/foxy-devel/doc/configuring_robot_localization.rst
+ekf_filter_node:
+    ros__parameters:
+      # mode1.yaml
+      # for wheel,odom_gps and imu fusion
+
+      #frequency: 30.0
+      #frequency: 2.0
+      #frequency: 4.0
+      frequency: 6.0
+      #sensor_timeout: 0.1
+      sensor_timeout: 1.0
+      two_d_mode: true
+      #transform_time_offset: 0.0
+      transform_time_offset: 0.2
+      transform_timeout: 0.0
+      print_diagnostics: true
+      publish_tf: true
+      #publish_tf: false
+      publish_acceleration: false
+
+      map_frame: map
+      odom_frame: odom
+      base_link_frame: base_footprint
+      #base_link_frame: base_link
+      #world_frame: map           # Defaults to the value of odom_frame if unspecified
+
+      #odom0: wheel odometry
+      odom0: wheel
+      odom0_config: [true, true, false,
+                    false, false, true,
+                    true , true, false,
+                    false, false, true,
+                    false, false, false]
+
+      #odom0_config: [false, false, false,
+      #              false, false, false,
+      #              true, true, false,
+      #              false, false, true,
+      #              false, false, false]
+
+      odom1: odom_gps
+      #odom1_config: [true, true, false,
+      #              false, false, false,
+      #              false , false, false,
+      #              false, false, false,
+      #              false, false, false]
+
+      odom1_config: [false, false, false,
+                    false, false, false,
+                    true, true, false,
+                    false, false, false,
+                    false, false, false]
+
+      #odom1_config: [true, true, false,
+      #              false, false, false,
+      #              true, true, false,
+      #              false, false, false,
+      #              false, false, false]
+
+
+      imu0: imu0
+      #imu0_config: [false, false, false,
+      #              false, false, true,
+      #              false, false, false,
+      #              false, false, true,
+      #              false, false, false]
+
+      imu0_config: [false, false, false,
+                    false, false, true,
+                    false, false, false,
+                    false, false, true,
+                    true, false, false]
