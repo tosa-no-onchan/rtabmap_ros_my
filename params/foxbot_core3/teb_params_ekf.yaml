@@ -55,7 +55,8 @@ bt_navigator:
     #use_sim_time: true
     use_sim_time: False
     global_frame: map
-    robot_base_frame: base_link
+    #robot_base_frame: base_link
+    robot_base_frame: base_footprint
     odom_topic: /odom
     default_bt_xml_filename: "navigate_w_replanning_and_recovery.xml"
     plugin_lib_names:
@@ -106,14 +107,18 @@ controller_server:
       movement_time_allowance: 10.0
     # Goal checker parameters
     goal_checker:
+      # https://navigation.ros.org/configuration/packages/nav2_controller-plugins/simple_goal_checker.html
       plugin: "nav2_controller::SimpleGoalChecker"
-      xy_goal_tolerance: 0.25
+      #xy_goal_tolerance: 0.25
       # changed by nishi
-      #xy_goal_tolerance: 0.05
-      yaw_goal_tolerance: 0.25
+      xy_goal_tolerance: 0.05
+      #yaw_goal_tolerance: 0.25
       # changed by nishi
-      #yaw_goal_tolerance: 0.08
-      stateful: True
+      yaw_goal_tolerance: 0.08
+      # Whether to check for XY position tolerance after rotating to goal orientation in case of minor localization changes.
+      #stateful: True
+      # changed by nishi
+      stateful: False
     # TEB parameters
     FollowPath:
       plugin: "teb_local_planner::TebLocalPlannerROS"
@@ -134,7 +139,8 @@ controller_server:
       visualize_hc_graph: True
       #max_vel_x: 0.26
       # changed by nishi
-      max_vel_x: 0.13
+      #max_vel_x: 0.13
+      max_vel_x: 0.11
       #max_vel_theta: 1.0
       # changed by nishi
       max_vel_theta: 0.25
@@ -170,14 +176,16 @@ local_costmap:
       resolution: 0.05
       robot_radius: 0.22
       #plugins: ["obstacle_layer", "voxel_layer", "inflation_layer"]
-      plugins: ["obstacle_layer", "inflation_layer"]
+      plugins: ["voxel_layer", "inflation_layer"]
+      # https://navigation.ros.org/configuration/packages/costmap-plugins/inflation.html
       inflation_layer:
         plugin: "nav2_costmap_2d::InflationLayer"
         cost_scaling_factor: 3.0
         inflation_radius: 0.55
       obstacle_layer:
         plugin: "nav2_costmap_2d::ObstacleLayer"
-        enabled: True
+        #enabled: True
+        enabled: False
         #observation_sources: scan
         observation_sources: point_cloud_sensor
         scan:
@@ -196,15 +204,19 @@ local_costmap:
           clearing: true
           min_obstacle_height: 0.3
           max_obstacle_height: 0.7
+      # https://github.com/ros-planning/navigation2/blob/foxy-devel/nav2_costmap_2d/plugins/voxel_layer.cpp
       voxel_layer:
         plugin: "nav2_costmap_2d::VoxelLayer"
-        #enabled: True
-        enabled: False
+        enabled: True
         publish_voxel_map: True
-        origin_z: 0.0
-        z_resolution: 0.2
+        #max_obstacle_height: 2.0
+        max_obstacle_height: 0.7
+        #origin_z: 0.0
+        # changed by nishi
+        origin_z: 0.05
+        #z_resolution: 0.2
+        z_resolution: 0.05
         z_voxels: 10
-        max_obstacle_height: 2.0
         mark_threshold: 0
         #observation_sources: pointcloud
         observation_sources: point_cloud_sensor
@@ -228,15 +240,15 @@ local_costmap:
         map_subscribe_transient_local: True
       always_send_full_costmap: True
 
-local_costmap_client:
-  ros__parameters:
-    #use_sim_time: True
-    use_sim_time: False
+  local_costmap_client:
+    ros__parameters:
+      #use_sim_time: True
+      use_sim_time: False
 
-local_costmap_rclcpp_node:
-  ros__parameters:
-    #use_sim_time: True
-    use_sim_time: False
+  local_costmap_rclcpp_node:
+    ros__parameters:
+      #use_sim_time: True
+      use_sim_time: False
 
 global_costmap:
   global_costmap:
@@ -247,14 +259,16 @@ global_costmap:
       update_frequency: 1.0
       publish_frequency: 1.0
       global_frame: map
-      robot_base_frame: base_link
+      #robot_base_frame: base_link
+      robot_base_frame: base_footprint
       robot_radius: 0.22 # radius set and used, so no footprint points
       resolution: 0.05
       #plugins: ["static_layer", "obstacle_layer", "voxel_layer", "inflation_layer"]
-      plugins: ["static_layer", "obstacle_layer", "inflation_layer"]
+      plugins: ["static_layer", "voxel_layer", "inflation_layer"]
       obstacle_layer:
         plugin: "nav2_costmap_2d::ObstacleLayer"
-        enabled: True
+        #enabled: True
+        enabled: False
         observation_sources: scan
         footprint_clearing_enabled: true
         max_obstacle_height: 2.0
@@ -282,40 +296,42 @@ global_costmap:
           min_obstacle_height: 0.3
           max_obstacle_height: 0.7
 
-      #voxel_layer:
-      #  plugin: "nav2_costmap_2d::VoxelLayer"
-      #  enabled: True
-      #  footprint_clearing_enabled: true
-      #  max_obstacle_height: 2.0
-      #  publish_voxel_map: True
-      #  origin_z: 0.0
-      #  z_resolution: 0.05
-      #  z_voxels: 16
-      #  max_obstacle_height: 2.0
-      #  unknown_threshold: 15
-      #  mark_threshold: 0
-      #  #observation_sources: pointcloud
-      #  observation_sources: point_cloud_sensor
-      #  combination_method: 1
-      #  #pointcloud:  # no frame set, uses frame from message
-      #  #  topic: /intel_realsense_r200_depth/points
-      #  #  max_obstacle_height: 2.0
-      #  #  min_obstacle_height: 0.0
-      #  #  obstacle_range: 2.5
-      #  #  raytrace_range: 3.0
-      #  #  clearing: True
-      #  #  marking: True
-      #  #  data_type: "PointCloud2"  
-      #  point_cloud_sensor: 
-      #    sensor_frame: camera
-      #    data_type: "PointCloud2"
-      #    topic: /cloudXYZ
-      #    #expected_update_rate: 10.0
-      #    expected_update_rate: 8.0
-      #    marking: true
-      #    clearing: true
-      #    min_obstacle_height: 0.3
-      #    max_obstacle_height: 0.7
+      voxel_layer:
+        plugin: "nav2_costmap_2d::VoxelLayer"
+        enabled: True
+        footprint_clearing_enabled: true
+        #max_obstacle_height: 2.0
+        max_obstacle_height: 0.7
+        publish_voxel_map: True
+        #origin_z: 0.0
+        # changed by nishi
+        origin_z: 0.05
+        z_resolution: 0.05
+        z_voxels: 16
+        unknown_threshold: 15
+        mark_threshold: 0
+        #observation_sources: pointcloud
+        observation_sources: point_cloud_sensor
+        combination_method: 1
+        #pointcloud:  # no frame set, uses frame from message
+        #  topic: /intel_realsense_r200_depth/points
+        #  max_obstacle_height: 2.0
+        #  min_obstacle_height: 0.0
+        #  obstacle_range: 2.5
+        #  raytrace_range: 3.0
+        #  clearing: True
+        #  marking: True
+        #  data_type: "PointCloud2"  
+        point_cloud_sensor: 
+          sensor_frame: camera
+          data_type: "PointCloud2"
+          topic: /cloudXYZ
+          #expected_update_rate: 10.0
+          expected_update_rate: 8.0
+          marking: true
+          clearing: true
+          min_obstacle_height: 0.3
+          max_obstacle_height: 0.7
 
       static_layer:
         plugin: "nav2_costmap_2d::StaticLayer"
@@ -332,15 +348,15 @@ global_costmap:
         inflate_around_unknown: true  
       always_send_full_costmap: True
 
-global_costmap_client:
-  ros__parameters:
-    #use_sim_time: True
-    use_sim_time: False
-  
-global_costmap_rclcpp_node:
-  ros__parameters:
-    #use_sim_time: True
-    use_sim_time: False
+  global_costmap_client:
+    ros__parameters:
+      #use_sim_time: True
+      use_sim_time: False
+    
+  global_costmap_rclcpp_node:
+    ros__parameters:
+      #use_sim_time: True
+      use_sim_time: False
 
 map_server:
   ros__parameters:
@@ -363,11 +379,19 @@ planner_server:
     #use_sim_time: True
     use_sim_time: False
     planner_plugins: ["GridBased"]
+    # https://github.com/ros-planning/navigation2_tutorials/issues/23
+    #GridBased:
+    #  plugin: "nav2_navfn_planner/NavfnPlanner"
+    #  tolerance: 0.5
+    #  use_astar: false
+    #  allow_unknown: true
+    planner_plugin_types: ['nav2_straightline_planner::StraightLine'] # For Foxy and earlier
+    planner_plugin_ids: ['GridBased'] # For Foxy and earlier
+    #plugins: ['GridBased'] # For Galactic and later
+    use_sim_time: True
     GridBased:
-      plugin: "nav2_navfn_planner/NavfnPlanner"
-      tolerance: 0.5
-      use_astar: false
-      allow_unknown: true
+      #plugin: nav2_straightline_planner/StraightLine # For Galactic and later
+      interpolation_resolution: 0.1
 
 planner_server_rclcpp_node:
   ros__parameters:

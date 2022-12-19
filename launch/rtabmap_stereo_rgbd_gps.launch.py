@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 #
-# rtabmap_ros_my/launch/ratbmap_stero_rgbd.launch.py
+# rtabmap_ros_my/launch/ratbmap_stero_rgbd_gps.launch.py
 #
-#  Rtabmap_ros with Stereo Camera (rgbd) Mapping or Acitve SLAM
+#  Rtabmap_ros with Stereo Camera (rgbd) and GPS Mapping or Acitve SLAM with 
+#      robot_localization/navsat_transform_node and robot_localization/ekf_node
 #
 # 1. build on SBC and PC
 #  $ colcon build --symlink-install --parallel-workers 1 --packages-select rtabmap_ros_my
@@ -23,19 +24,21 @@
 # 4.1 run on SBC (Jetson Nano 2G)
 #  1) term1
 #   $ sudo chmod 777 /dev/ttyTHS1
+#   $ sudo chmod 777 /dev/ttyUSB0
 #   $ sudo chmod 777 /dev/video0
 #   $ ros2 run micro_ros_agent micro_ros_agent serial --dev /dev/ttyTHS1 -b 1000000 [-v6]
 #
 #  2) term2
-#   $ ros2 launch rtabmap_ros_my rtabmap_stereo_rgbd.launch.py SBC:=true
+#   $ ros2 launch rtabmap_ros_my rtabmap_stereo_rgbd_gps.launch.py SBC:=true
 #
-# 4.2 run on remote PC or SBC
-#  1) term1
-#   $ ros2 launch rtabmap_ros_my rtabmap_stereo_rgbd.launch.py PC:=true
-#
-#  2) term2
-#   run Rviz 
-#   $ ros2 launch rtabmap_ros_my rtabmap_stereo_rgbd.launch.py PC2:=true
+# 4.2 run on remote PC
+#  1) term1 
+#   check topic
+#   $ ros2 topic hz /odom
+#   run
+#   $ ros2 launch rtabmap_ros_my rtabmap_stereo_rgbd_gps.launch.py PC:=true
+#  3) term2 Rviz
+#   $ ros2 launch rtabmap_ros_my rtabmap_stereo_rgbd_gps.launch.py PC2:=true
 #
 # 5. Remote control
 # 5.1 Remote PC /cmd_vel controll  -- Mapping
@@ -47,12 +50,12 @@
 #
 # 5.2 Remote PC / navigation2  ---  Acitve SLAM
 #  1) navigation2 dwa
-#   $ ros2 launch nav2_bringup navigation_launch.py use_sim_time:=False params_file:=/home/nishi/colcon_ws/src/rtabmap_ros_my/params/foxbot_core3/nav2_params.yaml
+#   $ ros2 launch nav2_bringup navigation_launch.py use_sim_time:=False params_file:=/home/nishi/colcon_ws/src/rtabmap_ros_my/params/foxbot_core3/nav2_params_ekf.yaml
 #
 #  1') navigation2 teb_local_planner
-#   $ ros2 launch nav2_bringup navigation_launch.py use_sim_time:=False params_file:=/home/nishi/colcon_ws/src/rtabmap_ros_my/params/foxbot_core3/teb_params.yaml
+#   $ ros2 launch nav2_bringup navigation_launch.py use_sim_time:=False params_file:=/home/nishi/colcon_ws/src/rtabmap_ros_my/params/foxbot_core3/teb_params_ekf.yaml
 #
-#  2) Rviz2
+#  2) Rviz
 #   $ ros2 launch nav2_bringup rviz_launch.py
 #
 #  3)  Teleop keyboard
@@ -99,7 +102,6 @@ def generate_launch_description():
     qos = LaunchConfiguration('qos')
     localization = LaunchConfiguration('localization')
 
-
     config_rviz = os.path.join(
         get_package_share_directory('rtabmap_ros'), 'launch', 'config', 'rgbd.rviz'
     )
@@ -107,6 +109,7 @@ def generate_launch_description():
     uvc_camera = get_package_share_directory('uvc_camera')
     stereo_image_proc = get_package_share_directory('stereo_image_proc')
     rtabmap_ros_my = get_package_share_directory('rtabmap_ros_my')
+    gysfdmaxb_gps=get_package_share_directory('gysfdmaxb_gps')
 
     rtabmap_parameters={
         "subscribe_depth": False,
@@ -116,8 +119,7 @@ def generate_launch_description():
         "subscribe_stereo": False,
         "frame_id": "base_footprint",
         "approx_sync": True,
-        #"queue_size": 10,
-        "queue_size": 30,
+        "queue_size": 10,
         "qos_image": qos,
         "qos_camera_info": qos,
         "qos_user_data": qos,
@@ -130,9 +132,13 @@ def generate_launch_description():
     rtabmap_remappings=[
         # subscribe
         ("rgb/image","rgbd_image/compressed"),
-        ("odom", "/odom_fox"),
+        #("odom", "/odom_fox"),
+        ("odom", "/odom"),
         # publish
-        ('map','/map')]
+        # 'mapData'
+        # 'mapGraph'
+        ('map','/map'),
+        ]
 
 
     return LaunchDescription([
@@ -147,6 +153,8 @@ def generate_launch_description():
 
         DeclareLaunchArgument('rviz',default_value='true', description='Launch RVIZ (optional).'),
         DeclareLaunchArgument('rviz_cfg', default_value=config_rviz,description='Configuration path of rviz2.'),
+
+        DeclareLaunchArgument('gps',default_value='true', description=''),
 
         GroupAction(
             [
@@ -179,6 +187,21 @@ def generate_launch_description():
                     output="screen",
                 ),
 
+                Node(
+                    package='tf2_ros',
+                    executable='static_transform_publisher',
+                    name='imu_base_link',
+                    arguments=['0', '0', '0', '0', '0', '0', 'base_link', 'imu_link'],
+                    output="screen",
+                ),
+                Node(
+                    package='tf2_ros',
+                    executable='static_transform_publisher',
+                    name='gps_base_link',
+                    arguments=['0', '0', '0', '0', '0', '0', 'base_link', 'gps_link'],
+                    output="screen",
+                ),
+
                 IncludeLaunchDescription(
                     PythonLaunchDescriptionSource(
                         os.path.join(uvc_camera, 'launch', 'single_stereo_node.launch.py')
@@ -191,6 +214,19 @@ def generate_launch_description():
                         os.path.join(stereo_image_proc,'launch', 'stereo_image_proc.launch.py')
                     ),
                     launch_arguments={'left_namespace':'left' ,'right_namespace':'right'}.items(),
+                ),
+
+
+                IncludeLaunchDescription(
+                    PythonLaunchDescriptionSource(
+                        os.path.join(gysfdmaxb_gps,'launch', 'gysfdmaxb_gps.launch.py')
+                    ),
+                    launch_arguments={
+                        'rate':'6',
+                        #'rate':'8',
+                        'device':'/dev/ttyUSB0',
+                        'topicName':'/gps/fix'}.items(),
+                    condition=IfCondition(LaunchConfiguration('gps')),
                 ),
 
 
@@ -236,6 +272,42 @@ def generate_launch_description():
                     namespace=LaunchConfiguration('namespace'),
                 ),
 
+                Node(
+                    # https://yoshiaki-toyama.com/robot_localization/
+                    # https://github.com/cra-ros-pkg/robot_localization/blob/foxy-devel/doc/navsat_transform_node.rst
+                    package='robot_localization', executable='navsat_transform_node', name='navsat_transform_node', output='screen',
+                    parameters=[{
+                        "publish_filtered_gps": True,
+                        "yaw_offset": 1.5707963,
+                        "zero_altitude": True,
+                    }],
+                    remappings=[
+                        # subscribe
+                        ('gps/fix', '/gps/fix'), 
+                        ('imu', '/imu'),
+                        #('imu/data', '/imu_fox'),
+                        ('odometry/filtered', '/odom_fox'),
+                        # publish
+                        ('odometry/gps', '/odom_gps'),
+                        #('gps/filtered', '/gps/filtered'),
+                        ],
+                ),
+
+                Node(
+                    # https://github.com/cra-ros-pkg/robot_localization/blob/foxy-devel/launch/ekf.launch.py
+                    package='robot_localization', executable='ekf_node', name='ekf_filter_node', output='screen',
+                    parameters=[os.path.join(get_package_share_directory("rtabmap_ros_my"), 'params','foxbot_core3', 'ekf.yaml')],
+                    remappings=[
+                        # subscribe
+                        ('wheel', '/odom_fox'), 
+                        ('odom_gps', '/odom_gps'),
+                        ('imu0', '/imu'),
+                        #('imu/data', '/imu_fox'),
+                        # publish
+                        #('odometry/filtered', '/odom_fusion'),
+                        ('odometry/filtered', '/odom'),
+                        ],
+                ),
 
             ],
             condition=IfCondition(LaunchConfiguration('SBC')),

@@ -10,6 +10,11 @@
 #
 # 2. set system clock sync of remote PC and SBC
 #  http://192.168.1.39:8000/date?set=1
+#   or
+#  On SBC
+#   s sudo systemctl stop chronyd
+#   $ sudo chronyd -q 'server 192.168.1.170 iburst'
+#   $ sudo systemctl start chronyd
 #
 # 3. disable firewall on remote PC
 #  $ sudo ufw disable
