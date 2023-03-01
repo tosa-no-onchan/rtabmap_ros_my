@@ -222,6 +222,7 @@ def generate_launch_description():
                         #"approx_sync_max_interval": 0.1 ,
                         #"approx_sync_max_interval": 0.2 ,
                         "approx_sync_max_interval": 0.5 ,
+                        "qos": 1,
                     }],
                     remappings=[
                         ('disparity/image', '/disparity'),   #

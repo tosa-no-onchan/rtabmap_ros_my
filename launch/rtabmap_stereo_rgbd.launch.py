@@ -23,16 +23,18 @@
 # 4.1 run on SBC (Jetson Nano 2G)
 #  1) term1
 #   $ sudo chmod 777 /dev/ttyTHS1
+#   $ sudo chmod 777 /dev/ttyUSB0
 #   $ sudo chmod 777 /dev/video0
 #   $ ros2 run micro_ros_agent micro_ros_agent serial --dev /dev/ttyTHS1 -b 1000000 [-v6]
 #
 #  2) term2
 #   $ ros2 launch rtabmap_ros_my rtabmap_stereo_rgbd.launch.py SBC:=true
+#    or with rtabmap_ros
+#   $ ros2 launch rtabmap_ros_my rtabmap_stereo_rgbd.launch.py SBC:=true PC:=true
 #
 # 4.2 run on remote PC or SBC
 #  1) term1
 #   $ ros2 launch rtabmap_ros_my rtabmap_stereo_rgbd.launch.py PC:=true
-#
 #  2) term2
 #   run Rviz 
 #   $ ros2 launch rtabmap_ros_my rtabmap_stereo_rgbd.launch.py PC2:=true
@@ -46,19 +48,22 @@
 #   $ ros2 run turtlebot3_navi_my drive_base
 #
 # 5.2 Remote PC / navigation2  ---  Acitve SLAM
-#  1) navigation2 dwa
+#  1) check
+#   $ ros2 topic hz /cloudXYZ
+#
+#  2) navigation2 dwa
 #   $ ros2 launch nav2_bringup navigation_launch.py use_sim_time:=False params_file:=/home/nishi/colcon_ws/src/rtabmap_ros_my/params/foxbot_core3/nav2_params.yaml
 #
-#  1') navigation2 teb_local_planner
+#  2') navigation2 teb_local_planner
 #   $ ros2 launch nav2_bringup navigation_launch.py use_sim_time:=False params_file:=/home/nishi/colcon_ws/src/rtabmap_ros_my/params/foxbot_core3/teb_params.yaml
 #
-#  2) Rviz2
+#  3) Rviz2
 #   $ ros2 launch nav2_bringup rviz_launch.py
 #
-#  3)  Teleop keyboard
+#  4)  Teleop keyboard
 #   $ ros2 run turtlebot3_teleop teleop_keyboard
 #
-#  4) C++ Program controll
+#  4') C++ Program controll
 #   $ ros2 run turtlebot3_navi_my multi_goals4_nav2
 #
 
@@ -183,7 +188,8 @@ def generate_launch_description():
                     PythonLaunchDescriptionSource(
                         os.path.join(uvc_camera, 'launch', 'single_stereo_node.launch.py')
                     ),
-                    launch_arguments={'left/device': '/dev/video0'}.items(),
+                    #launch_arguments={'left/device': '/dev/video0'}.items(),
+                    launch_arguments={'left/device': '/dev/video0','qos': '0', 'intra':'False', 'trace':'True' }.items(),
                 ),
 
                 IncludeLaunchDescription(
@@ -201,6 +207,7 @@ def generate_launch_description():
                         "approx_sync": True,
                         #"approx_sync_max_interval": 0.01,
                         "approx_sync_max_interval": 0.05,
+                        #"approx_sync_max_interval": 0.07,
                         "queue_size": 10,
                         "qos": 2,
                         "qos_camera_info": 2}],
@@ -228,6 +235,8 @@ def generate_launch_description():
                         #"approx_sync_max_interval": 0.1 ,
                         #"approx_sync_max_interval": 0.2 ,
                         "approx_sync_max_interval": 0.5 ,
+                        #"approx_sync_max_interval": 0.7 ,
+                        "qos": 0,
                     }],
                     remappings=[
                         ('disparity/image', '/disparity'),   #
