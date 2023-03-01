@@ -10,6 +10,10 @@ rtabmap_ros が実行できる、 launch ファイル。
     $ cd ..    
     $ colcon build --symlink-install --parallel-workers 1 --packages-select rtabmap_ros_my    
     
+#### 2. Run    
+
+    check rtabmap_stereo_rgbd.launch.py file  
+
 #### Update.    
     
     2022.12.18    
