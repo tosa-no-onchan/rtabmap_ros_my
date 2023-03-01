@@ -1,4 +1,4 @@
-## rtabmap_ros_my for Ros2 foxy
+## rtabmap_ros_my for Ros2 galactic
     
 ROS2 対応 自作 Turtlebot3(foxbot_core3_r2.ino) で、 Single USB Stereo Camera を使って    
 rtabmap_ros が実行できる、 launch ファイル。    
@@ -14,3 +14,5 @@ rtabmap_ros が実行できる、 launch ファイル。
     
     2022.12.18    
         support ros2 foxy    
+    2023.3.1  
+        support ros2 galactic  
