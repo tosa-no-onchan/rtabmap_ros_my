@@ -10,9 +10,16 @@ rtabmap_ros が実行できる、 launch ファイル。
     $ cd ..    
     $ colcon build --symlink-install --parallel-workers 1 --packages-select rtabmap_ros_my    
     
-#### 2. Run    
+#### 2. Run Gazebo    
 
-    check rtabmap_stereo_rgbd.launch.py file  
+    turtlebot3_scan.launch.py  
+    turtlebot3_rgbd.launch.py  
+    turtlebot3_rgbd_sync.launch.py
+    
+#### 3. Run real Robot(foxbot_core3_r2)    
+    
+    rtabmap_stereo_rgbd.launch.py  
+    rtabmap_stereo_rgbd_gps.launch.py  
 
 #### Update.    
     
