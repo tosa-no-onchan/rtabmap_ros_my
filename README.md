@@ -21,9 +21,15 @@ rtabmap_ros が実行できる、 launch ファイル。
     rtabmap_stereo_rgbd.launch.py  
     rtabmap_stereo_rgbd_gps.launch.py  
 
-#### Update.    
+#### 4. Update.    
+2033.12.18  
     
-    2022.12.18    
-        support ros2 foxy    
-    2023.3.1  
-        support ros2 galactic  
+    support ros2 foxy    
+    
+2023.3.1  
+    
+    support ros2 galactic  
+
+2023.3.16  
+
+    support heart beat for foxbot_core3_r2  
