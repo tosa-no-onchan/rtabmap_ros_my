@@ -76,7 +76,9 @@ def generate_launch_description():
             PythonLaunchDescriptionSource(
                 os.path.join(uvc_camera, 'launch', 'single_stereo_node.launch.py')
             ),
-            launch_arguments={'left/device': '/dev/video0','qos': '1', 'intra':'False', 'trace':'True' }.items(),
+            launch_arguments={'left/device': '/dev/video0','qos': '1', 'intra':'False', 'trace':'True', 'fps': '12' }.items(),
+            #launch_arguments={'left/device': '/dev/video0','qos': '1', 'intra':'False', 'trace':'True' }.items(),
+            #launch_arguments={'left/device': '/dev/video1','qos': '1', 'intra':'False', 'trace':'True' }.items(),
         ),
 
         IncludeLaunchDescription(
