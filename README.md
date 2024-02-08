@@ -36,7 +36,7 @@ rtabmap_ros が実行できる、 launch ファイル。
 
 2024.2.8  
 
-    support updated rtabmap and rtabmap_ros  
+    support ros2 humble and updated rtabmap and rtabmap_ros  
     turtlebot3_rgbd.launch.py  
     turtlebot3_rgbd_sync.launch.py
     
