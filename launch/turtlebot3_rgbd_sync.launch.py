@@ -1,7 +1,7 @@
 # Requirements:
 #   Install Turtlebot3 packages
 #   Modify turtlebot3_waffle SDF:
-#     1) Edit turtlebot3_gazebo/models/turtlebot3_waffle/model.sdf
+#     1) Edit /opt/ros/$ROS_DISTRO/share/turtlebot3_gazebo/models/turtlebot3_waffle/model.sdf
 #     2) Add
 #          <joint name="camera_rgb_optical_joint" type="fixed">
 #            <parent>camera_rgb_frame</parent>
@@ -18,7 +18,7 @@
 #     7) Note that we can increase min scan range from 0.12 to 0.2 to avoid having scans 
 #        hitting the robot itself
 #
-# original file : rtabmap_ros/launch/ros2/turtlebot3_rgbd_sync.launch.py
+# original file : rtabmap_ros/rtabmap_demos/ros2/turtlebot3_rgbd_sync.launch.py
 #  $ colcon build --symlink-install --parallel-workers 1 --packages-select turtlebot3_gazebo
 #
 # 1. build
@@ -31,29 +31,31 @@
 #   $ ros2 launch turtlebot3_gazebo turtlebot3_house.launch.py
 #   #$ ros2 launch turtlebot3_gazebo turtlebot3_world.launch.py
 #
-#   2. rtabmap_ros with rgbd_sync
+#  2. rtabmap_ros with rgbd_sync
 #   SLAM:
 #   $ ros2 launch rtabmap_ros_my turtlebot3_rgbd_sync.launch.py
 #   OR
-#   $ ros2 launch rtabmap_ros rtabmap.launch.py visual_odometry:=false frame_id:=base_footprint subscribe_scan:=true approx_sync:=true approx_rgbd_sync:=false odom_topic:=/odom args:="-d --RGBD/NeighborLinkRefining true --Reg/Strategy 1 --Reg/Force3DoF true --Grid/RangeMin 0.2" use_sim_time:=true rgbd_sync:=true rgb_topic:=/camera/image_raw depth_topic:=/camera/depth/image_raw camera_info_topic:=/camera/camera_info
+#   $ ros2 launch rtabmap_launch rtabmap.launch.py visual_odometry:=false frame_id:=base_footprint subscribe_scan:=true  approx_sync:=true approx_rgbd_sync:=false odom_topic:=/odom args:="-d --RGBD/NeighborLinkRefining true --Reg/Strategy 1 --Reg/Force3DoF true --Grid/RangeMin 0.2" use_sim_time:=true rgbd_sync:=true rgb_topic:=/camera/image_raw depth_topic:=/camera/depth/image_raw camera_info_topic:=/camera/camera_info qos:=2
+#   $ ros2 run topic_tools relay /rtabmap/map /map
 #
-#   3. navigation2
-#       default local_planner
+#  3. Navigation (install nav2_bringup package):
+#   3.1    default local_planner
 #   $ ros2 launch nav2_bringup navigation_launch.py use_sim_time:=True params_file:=/home/nishi/colcon_ws/src/rtabmap_ros_my/params/rgbd_sync/nav2_params.yaml
-#       teb_local_planner
+#   3.2    teb_local_planner
 #   $ ros2 launch nav2_bringup navigation_launch.py use_sim_time:=True params_file:=/home/nishi/colcon_ws/src/rtabmap_ros_my/params/rgbd_sync/teb_nav2_params.yaml
+#   3.3    rpp_local_planner
+#   $ ros2 launch nav2_bringup navigation_launch.py use_sim_time:=True params_file:=/home/nishi/colcon_ws/src/rtabmap_ros_my/params/rgbd_sync/rpp_nav2_params.yaml
 #
+#  3.1 Rviz
 #   $ ros2 launch nav2_bringup rviz_launch.py
 #
 #   Teleop:
 #     $ ros2 run turtlebot3_teleop teleop_keyboard
 #
-#   4. C++ Program controll
-#   $ ros2 run turtlebot3_navi_my multi_goals4_nav2
+#  4. C++ Program controll
+#   #$ ros2 run turtlebot3_navi_my multi_goals4_nav2
+#   $ ros2 launch turtlebot3_navi_my multi_goals4_nav2.launch.py use_sim_time:=True
 
-import os
-
-from ament_index_python.packages import get_package_share_directory
 
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, SetEnvironmentVariable
@@ -68,18 +70,11 @@ def generate_launch_description():
     qos = LaunchConfiguration('qos')
     localization = LaunchConfiguration('localization')
 
-
-    config_rviz = os.path.join(
-        get_package_share_directory('rtabmap_ros'), 'launch', 'config', 'rgbd.rviz'
-    )
-
     parameters={
           'frame_id':'base_footprint',
           'use_sim_time':use_sim_time,
-          #"subscribe_depth": True,      # test by nishi
           'subscribe_rgbd':True,
-          'subscribe_scan':True,       # scan stop  by nishi
-          #'subscribe_scan':False,       # scan stop  by nishi
+          'subscribe_scan':True,
           'use_action_for_goal':True,
           'qos_scan':qos,
           'qos_image':qos,
@@ -97,7 +92,6 @@ def generate_launch_description():
           #"Grid/RangeMax":'2.0',
           #'RGBD/AngularUpdate':"0.05",   # Update map only if the robot is moving 
           #'RGBD/LinearUpdate':"0.05",    # Update map only if the robot is moving
-
     }
     # tf_delay      = 0.050000
     # tf_tolerance  = 0.100000
@@ -115,6 +109,7 @@ def generate_launch_description():
           #('depth/image', '/camera/depth/image_raw'),
           ('map','/map')]
 
+
     return LaunchDescription([
 
         # Launch arguments
@@ -130,17 +125,14 @@ def generate_launch_description():
             'localization', default_value='false',
             description='Launch in localization mode.'),
 
-        DeclareLaunchArgument('rtabmapviz',default_value='false', description='Launch RVIZ (optional).'),
+        DeclareLaunchArgument('rviz',default_value='true', description='Launch RVIZ (optional).'),
+
         DeclareLaunchArgument('namespace', default_value='rtabmap', description=''),
-
-        DeclareLaunchArgument('rviz',default_value='false', description='Launch RVIZ (optional).'),
-        DeclareLaunchArgument('rviz_cfg', default_value=config_rviz, description='Configuration path of rviz2.'),
-
 
         # Nodes to launch
         Node(
-            package='rtabmap_ros', executable='rgbd_sync', output='screen',
-            parameters=[{'approx_sync':True, 'use_sim_time':use_sim_time, 'qos':qos}],
+            package='rtabmap_sync', executable='rgbd_sync', output='screen',
+            parameters=[{'approx_sync':False, 'use_sim_time':use_sim_time, 'qos':qos}],
             # http://wiki.ros.org/rtabmap_ros#rtabmap_ros.2Frgbd_sync
             #1. Subscribed Topics
             #    rgb/image (sensor_msgs/Image)
@@ -157,7 +149,7 @@ def generate_launch_description():
             remappings=remappings),
 
         Node(
-            package='rtabmap_ros', executable='point_cloud_xyzrgb', output='screen',
+            package='rtabmap_util', executable='point_cloud_xyzrgb', output='screen',
             parameters=[{
                 "decimation": 4,
                 "voxel_size": 0.0,
@@ -177,39 +169,36 @@ def generate_launch_description():
                 ('cloud', '/cloudXYZ')]
         ),
 
+
         # SLAM Mode:
         Node(
             condition=UnlessCondition(localization),
-            package='rtabmap_ros', executable='rtabmap', output='screen',
+            package='rtabmap_slam', executable='rtabmap', output='screen',
             parameters=[parameters],
+            #remappings=remappings,
             remappings=remappings2,
             arguments=['-d'],
             namespace=LaunchConfiguration('namespace'),
             ),
-
+            
         # Localization mode:
         Node(
             condition=IfCondition(localization),
-            package='rtabmap_ros', executable='rtabmap', output='screen',
+            package='rtabmap_slam', executable='rtabmap', output='screen',
             parameters=[parameters,
               {'Mem/IncrementalMemory':'False',
                'Mem/InitWMWithAllNodes':'True'}],
+            #remappings=remappings,
             remappings=remappings2,
             namespace=LaunchConfiguration('namespace'),
             ),
 
         Node(
-            package='rtabmap_ros', executable='rtabmapviz', output='screen',
-            condition=IfCondition(LaunchConfiguration("rtabmapviz")),     
+            condition=IfCondition(LaunchConfiguration("rviz")),
+            package='rtabmap_viz', executable='rtabmap_viz', output='screen',
             parameters=[parameters],
-            remappings=remappings,
+            #remappings=remappings,
+            remappings=remappings2,
             namespace=LaunchConfiguration('namespace'),
             ),
-
-        Node(
-            package='rviz2', executable='rviz2', output='screen',
-            condition=IfCondition(LaunchConfiguration("rviz")),
-            arguments=[["-d"], [LaunchConfiguration("rviz_cfg")]],
-            ),
-
     ])
