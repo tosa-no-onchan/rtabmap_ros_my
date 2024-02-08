@@ -1,4 +1,4 @@
-## rtabmap_ros_my for Ros2 galactic
+## rtabmap_ros_my for Ros2 humble
     
 ROS2 対応 自作 Turtlebot3(foxbot_core3_r2.ino) で、 Single USB Stereo Camera を使って    
 rtabmap_ros が実行できる、 launch ファイル。    
@@ -32,4 +32,11 @@ rtabmap_ros が実行できる、 launch ファイル。
 
 2023.3.16  
 
-    support heart beat for foxbot_core3_r2  
+    support heart beat for foxbot_core3_r2 
+
+2024.2.8  
+
+    support updated rtabmap and rtabmap_ros  
+    turtlebot3_rgbd.launch.py  
+    turtlebot3_rgbd_sync.launch.py
+    
