@@ -24,7 +24,9 @@ setup(
         ('share/' + package_name, ['package.xml']),
         # add by nishi
         (os.path.join('share', package_name,'launch'), glob('launch/*.launch.py')),
+        (os.path.join('share', package_name,'launch','config'), glob('launch/config/*.rviz')),
         (os.path.join('share', package_name,'params','foxbot_core3'), glob('params/foxbot_core3/*.yaml')),
+        (os.path.join('share', package_name,'params','foxbot_nav2'), glob('params/foxbot_nav2/*.yaml')),
         (os.path.join('share', package_name,'params','rgbd_sync'), glob('params/rgbd_sync/*.yaml')),
         (os.path.join('share', package_name,'params','scan'), glob('params/scan/*.yaml')),
     ],
