@@ -20,6 +20,8 @@ rtabmap_ros が実行できる、 launch ファイル。
     $ ros2 launch turtlebot3_navi_my multi_goals4_nav2.launch.py use_sim_time:=True  
     を実行すれば、  
     Gazebo House and Turtlebot3 で、部屋の中を自動で動き回って、House の Mapping をします。  
+
+[turtlebot3_navi_my](https://github.com/tosa-no-onchan/turtlebot3_navi_my)  
     
 #### 3. Run real Robot(foxbot_core3_r2)    
     
