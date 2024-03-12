@@ -10,7 +10,7 @@ rtabmap_ros が実行できる、 launch ファイル。
     $ cd ..    
     $ colcon build --symlink-install --parallel-workers 1 --packages-select rtabmap_ros_my    
     
-#### 2. Run Gazebo    
+#### 2. Run Gazebo and Turtlebot3 with Rtabmap_ros Rgbd Camera    
 
     turtlebot3_scan.launch.py  
     turtlebot3_rgbd.launch.py  
