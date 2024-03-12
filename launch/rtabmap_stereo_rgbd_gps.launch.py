@@ -5,13 +5,16 @@
 #  Rtabmap_ros with Stereo Camera (rgbd) and GPS Mapping or Acitve SLAM with 
 #      robot_localization/navsat_transform_node and robot_localization/ekf_node
 #
+# foxbot_core3_r2.ino setting
+#   same with foxbot_nav2_stereo_gps.launch.py
+#
 # 1. build on SBC and PC
 #  $ colcon build --symlink-install --parallel-workers 1 --packages-select rtabmap_ros_my
 #  $ . install/setup.bash
 #  $ rosdep update && rosdep install --from-path src --ignore-src -y
 #
 # 2. set system clock sync of remote PC and SBC
-#  http://192.168.1.39:8000/date?set=1
+#  http://192.168.1.46:8000/date?set=1
 #   or
 #  On SBC
 #   s sudo systemctl stop chronyd
@@ -22,26 +25,24 @@
 #  $ sudo ufw disable
 #
 # 4 run
-# 4.1 run on SBC (Jetson Nano 2G)
-#  1) term1
-#   $ sudo chmod 777 /dev/ttyTHS1
-#   $ sudo chmod 777 /dev/ttyUSB0
-#   $ sudo chmod 777 /dev/video0
-#   $ ros2 run micro_ros_agent micro_ros_agent serial --dev /dev/ttyTHS1 -b 1000000 [-v6]
+# 4.1 run on SBC (Orange Pi5 armibian)
+#  1) term1  -> add group               group
+#   $ sudo chmod 777 /dev/ttyS0     ->  dialout
+#   $ sudo chmod 777 /dev/ttyUSB0   ->  dialout
+#   $ sudo chmod 777 /dev/video0    ->  video
 #
-#  2) term2
+#   $ ros2 run micro_ros_agent micro_ros_agent serial --dev /dev/ttyS0 -b 1000000 [-v6]
+#
+#  2) term2 start Camera, GPS, static_transform_publisher and others.
 #   $ ros2 launch rtabmap_ros_my rtabmap_stereo_rgbd_gps.launch.py SBC:=true
-#    or with rtabmap_ros
-#   $ ros2 launch rtabmap_ros_my rtabmap_stereo_rgbd_gps.launch.py SBC:=true PC:=true
 #
-# 4.2 run on remote PC
-#  1) term1 
+#  3) term3
 #   check topic
 #     $ ros2 topic hz /odom
-#   run rtabmap_ros on remote
+#   run rtabmap_ros on SBC
 #     $ ros2 launch rtabmap_ros_my rtabmap_stereo_rgbd_gps.launch.py PC:=true
 #
-# 5. Remote control
+# 5. Manual Control Mapping by telop
 # 5.1 Remote PC /cmd_vel controll  -- Mapping
 #  1) Teleop keyboard
 #   $ ros2 run turtlebot3_teleop teleop_keyboard
@@ -49,26 +50,37 @@
 #  2) drive_base include heart beat function.
 #   $ ros2 run turtlebot3_navi_my drive_base
 #
-# 5.2 Remote PC / navigation2  ---  Acitve SLAM
+# 6. Active SLAM Mapping with navigation2 On SBC
+#  6.1 run navigation2 on SBC
 #  1) navigation2 dwa
 #   $ ros2 launch nav2_bringup navigation_launch.py use_sim_time:=False params_file:=/home/nishi/colcon_ws/src/rtabmap_ros_my/params/foxbot_core3/nav2_params_ekf.yaml
 #
 #  1') navigation2 teb_local_planner
 #   $ ros2 launch nav2_bringup navigation_launch.py use_sim_time:=False params_file:=/home/nishi/colcon_ws/src/rtabmap_ros_my/params/foxbot_core3/teb_params_ekf.yaml
 #
-#  2) Rviz
-#   $ ros2 launch nav2_bringup rviz_launch.py
+#  1'') navigation2 rpp_planner
+#   $ ros2 launch nav2_bringup navigation_launch.py use_sim_time:=False params_file:=/home/nishi/colcon_ws/src/rtabmap_ros_my/params/foxbot_core3/rpp_params_ekf.yaml
+#
+#  6.2 on Remote PC
+#  1) Rviz2
+#    $ ros2 launch nav2_bringup rviz_launch.py
 #     or
 #   $ ros2 launch rtabmap_ros_my rtabmap_stereo_rgbd_gps.launch.py PC2:=true
 #
-#  3)  Teleop keyboard drive
+#  6.3 robot control #2  on SBC or Remote PC
+#  1) On Remote PC Teleop keyboard drive
 #   $ ros2 run turtlebot3_teleop teleop_keyboard
-#
-#  3') C++ Program control include heart_beat function.
-#   $ ros2 run turtlebot3_navi_my multi_goals4_nav2
+#  or
+#  2) On SBC C++ Program control include heart_beat function.
+#   #$ ros2 run turtlebot3_navi_my multi_goals4_nav2
+#   $ ros2 launch turtlebot3_navi_my multi_goals4_nav2.launch.py use_sim_time:=False
 #
 #   check
 #   $ ros2 topic hz /fox_beat
+#
+# append.
+# how to map save ,on Remote PC OK
+# ros2 run nav2_map_server map_saver_cli -f ~/map/my_map --ros-args -p save_map_timeout:=10000.0
 
 import os
 
@@ -108,7 +120,7 @@ def generate_launch_description():
     localization = LaunchConfiguration('localization')
 
     #config_rviz = os.path.join(
-    #    get_package_share_directory('rtabmap_ros'), 'launch', 'config', 'rgbd.rviz'
+    #    get_package_share_directory('rtabmap_launch'), 'launch', 'config', 'rgbd.rviz'
     #)
     config_rviz = '/home/nishi/colcon_ws/src/rtabmap_ros_my/launch/config/rgbd.rviz'
 
@@ -141,8 +153,8 @@ def generate_launch_description():
     rtabmap_remappings=[
         # subscribe
         ("rgb/image","rgbd_image/compressed"),
-        #("odom", "/odom_fox"),
         ("odom", "/odom"),
+        #("odom", "/odom_fox"),
         # publish
         # 'mapData'
         # 'mapGraph'
@@ -242,15 +254,15 @@ def generate_launch_description():
 
 
                 Node(
-                    package='rtabmap_ros', executable='stereo_sync', output="screen",
+                    package='rtabmap_sync', executable='stereo_sync', output="screen",
                     #condition=IfCondition(PythonExpression(["'", LaunchConfiguration('stereo'), "' == 'true' and '", LaunchConfiguration('rgbd_sync'), "' == 'true'"])),
                     parameters=[{
                         "approx_sync": True,
                         #"approx_sync_max_interval": 0.01,
                         "approx_sync_max_interval": 0.05,
                         "queue_size": 10,
-                        "qos": 2,
-                        "qos_camera_info": 2}],
+                        "qos": qos,
+                        "qos_camera_info": 0}],
                     remappings=[
                         ("left/image_rect", '/left/image_rect_color'),
                         ("right/image_rect", '/right/image_rect_color'),
@@ -265,16 +277,17 @@ def generate_launch_description():
                     # https://github.com/ros-perception/image_pipeline/tree/foxy/depth_image_proc/src
                     # camera_info (sensor_msgs/CameraInfo) 
                     # image_rect (sensor_msgs/Image) 
-                    package='rtabmap_ros', executable='point_cloud_xyz', output='screen',
+                    package='rtabmap_util', executable='point_cloud_xyz', output='screen',
                     parameters=[{
                         "decimation": 4,
-                        #"voxel_size": 0.0,
-                        "voxel_size": 0.05,
+                        "voxel_size": 0.0,
+                        #"voxel_size": 0.05,
                         "approx_sync": True,
                         #"exact_sync": True,
                         #"approx_sync_max_interval": 0.1 ,
                         #"approx_sync_max_interval": 0.2 ,
                         "approx_sync_max_interval": 0.5 ,
+                        #"qos": 0,
                         "qos": 1,
                     }],
                     remappings=[
@@ -331,7 +344,7 @@ def generate_launch_description():
                 # SLAM mode:
                 Node(
                     condition=UnlessCondition(localization),
-                    package='rtabmap_ros', executable='rtabmap', output='screen',
+                    package='rtabmap_slam', executable='rtabmap', output='screen',
                     parameters=[rtabmap_parameters],
                     remappings=rtabmap_remappings,
                     arguments=['-d'],
@@ -341,7 +354,7 @@ def generate_launch_description():
                 # Localization mode:
                 Node(
                     condition=IfCondition(localization),
-                    package='rtabmap_ros', executable='rtabmap', output='screen',
+                    package='rtabmap_slam', executable='rtabmap', output='screen',
                     parameters=[rtabmap_parameters,
                         {'Mem/IncrementalMemory':'False',
                         'Mem/InitWMWithAllNodes':'True'}],

@@ -145,7 +145,12 @@ controller_server:
       #desired_linear_vel: 0.5
       # chaged by nishi
       #desired_linear_vel: 0.25
-      desired_linear_vel: 0.125
+      #desired_linear_vel: 0.125
+      # changed 2024.3.10
+      desired_linear_vel: 0.07
+      # changed 2024.3.2
+      # no good
+      #desired_linear_vel: -0.125
       lookahead_dist: 0.6
       min_lookahead_dist: 0.3
       max_lookahead_dist: 0.9
@@ -168,11 +173,19 @@ controller_server:
       regulated_linear_scaling_min_speed: 0.25
       use_rotate_to_heading: true
       allow_reversing: false
+      # changed 2024.3.2  not good!
+      #allow_reversing: true
       rotate_to_heading_min_angle: 0.785
       #max_angular_accel: 3.2
       # changed by nishi
       #max_angular_accel: 1.6
-      max_angular_accel: 0.8
+      #max_angular_accel: 0.8
+      # changed 2024.3.2
+      #max_angular_accel: 0.7
+      # changed 2024.3.9
+      #max_angular_accel: 0.5
+      # changed 2024.3.10
+      max_angular_accel: 0.2
       max_robot_pose_search_dist: 10.0
       use_interpolation: false
 
@@ -192,6 +205,8 @@ local_costmap:
       height: 3
       resolution: 0.05
       robot_radius: 0.22
+      # changed 2024.3.2
+      #robot_radius: 0.20
       #plugins: ["voxel_layer", "inflation_layer"]
       #plugins: ["obstacle_layer", "inflation_layer"]
       plugins: ["static_layer", "obstacle_layer", "inflation_layer"]
@@ -251,6 +266,8 @@ global_costmap:
       robot_base_frame: base_link
       use_sim_time: True
       robot_radius: 0.22
+      # changed 2024.3.2
+      #robot_radius: 0.20
       resolution: 0.05
       track_unknown_space: true
       plugins: ["static_layer", "obstacle_layer", "inflation_layer"]
@@ -291,7 +308,9 @@ global_costmap:
       inflation_layer:
         plugin: "nav2_costmap_2d::InflationLayer"
         cost_scaling_factor: 3.0
-        inflation_radius: 0.45
+        #inflation_radius: 0.45
+        # changed 2024.3.2
+        inflation_radius: 0.40
       always_send_full_costmap: True
 
 map_server:
@@ -356,11 +375,19 @@ behavior_server:
     use_sim_time: true
     simulate_ahead_time: 2.0
     #max_rotational_vel: 1.0
-    max_rotational_vel: 0.6
+    #max_rotational_vel: 0.6
+    # changed 2024.3.2
+    #max_rotational_vel: 0.5
+    # changed 2024.3.10
+    max_rotational_vel: 0.4
     #min_rotational_vel: 0.4
     min_rotational_vel: 0.2
     #rotational_acc_lim: 3.2
-    rotational_acc_lim: 0.8
+    #rotational_acc_lim: 0.8
+    # changed 2024.3.2
+    #rotational_acc_lim: 0.7
+    # changed 2024.3.10
+    rotational_acc_lim: 0.5
 
 robot_state_publisher:
   ros__parameters:

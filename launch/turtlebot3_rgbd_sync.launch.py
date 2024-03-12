@@ -53,7 +53,9 @@
 #     $ ros2 run turtlebot3_teleop teleop_keyboard
 #
 #  4. C++ Program controll
+#   #$ ros2 run turtlebot3_navi_my multi_goals4_cmd_vel
 #   #$ ros2 run turtlebot3_navi_my multi_goals4_nav2
+#   $ ros2 launch turtlebot3_navi_my multi_goals4_cmd_vel.launch.py use_sim_time:=True
 #   $ ros2 launch turtlebot3_navi_my multi_goals4_nav2.launch.py use_sim_time:=True
 
 
@@ -75,6 +77,7 @@ def generate_launch_description():
           'use_sim_time':use_sim_time,
           'subscribe_rgbd':True,
           'subscribe_scan':True,
+          #'subscribe_scan':False,   # changed by nhisi 2024.3.1
           'use_action_for_goal':True,
           'qos_scan':qos,
           'qos_image':qos,
@@ -125,7 +128,7 @@ def generate_launch_description():
             'localization', default_value='false',
             description='Launch in localization mode.'),
 
-        DeclareLaunchArgument('rviz',default_value='true', description='Launch RVIZ (optional).'),
+        DeclareLaunchArgument('rviz',default_value='false', description='Launch RVIZ (optional).'),
 
         DeclareLaunchArgument('namespace', default_value='rtabmap', description=''),
 

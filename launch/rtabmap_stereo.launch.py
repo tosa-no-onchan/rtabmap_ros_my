@@ -188,7 +188,7 @@ def generate_launch_description():
 
 
                 Node(
-                    package='rtabmap_ros', executable='stereo_sync', output="screen",
+                    package='rtabmap_sync', executable='stereo_sync', output="screen",
                     #condition=IfCondition(PythonExpression(["'", LaunchConfiguration('stereo'), "' == 'true' and '", LaunchConfiguration('rgbd_sync'), "' == 'true'"])),
                     condition=IfCondition(LaunchConfiguration('rgbd')),
                     parameters=[{
@@ -212,7 +212,7 @@ def generate_launch_description():
                     # https://github.com/ros-perception/image_pipeline/tree/foxy/depth_image_proc/src
                     # camera_info (sensor_msgs/CameraInfo) 
                     # image_rect (sensor_msgs/Image) 
-                    package='rtabmap_ros', executable='point_cloud_xyz', output='screen',
+                    package='rtabmap_util', executable='point_cloud_xyz', output='screen',
                     parameters=[{
                         "decimation": 4,
                         #"voxel_size": 0.0,
@@ -241,7 +241,7 @@ def generate_launch_description():
                 # SLAM mode:
                 Node(
                     condition=UnlessCondition(localization),
-                    package='rtabmap_ros', executable='rtabmap', output='screen',
+                    package='rtabmap_slam', executable='rtabmap', output='screen',
                     parameters=[rtabmap_parameters],
                     remappings=rtabmap_remappings,
                     arguments=['-d'],
@@ -251,7 +251,7 @@ def generate_launch_description():
                 # Localization mode:
                 Node(
                     condition=IfCondition(localization),
-                    package='rtabmap_ros', executable='rtabmap', output='screen',
+                    package='rtabmap_slam', executable='rtabmap', output='screen',
                     parameters=[rtabmap_parameters,
                         {'Mem/IncrementalMemory':'False',
                         'Mem/InitWMWithAllNodes':'True'}],

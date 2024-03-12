@@ -30,6 +30,8 @@
 #  1. Gazebo
 #   $ export TURTLEBOT3_MODEL=waffle
 #   $ ros2 launch turtlebot3_gazebo turtlebot3_house.launch.py
+#   how to kill Gazeb server
+#   $ killall gzserver
 #
 #  2. rtabmap_ros with rgbd
 #   SLAM:
@@ -54,6 +56,7 @@
 #
 #  5. C++ Program controll
 #   #$ ros2 run turtlebot3_navi_my multi_goals4_nav2
+#   $ ros2 launch turtlebot3_navi_my multi_goals4_cmd_vel.launch.py use_sim_time:=True
 #   $ ros2 launch turtlebot3_navi_my multi_goals4_nav2.launch.py use_sim_time:=True
 #
 # append.
@@ -82,7 +85,14 @@ def generate_launch_description():
           'qos_image':qos,
           'qos_imu':qos,
           'Reg/Force3DoF':'true',
-          'Optimizer/GravitySigma':'0' # Disable imu constraints (we are already in 2D)
+          'Optimizer/GravitySigma':'0', # Disable imu constraints (we are already in 2D)
+          #'Vis/MaxDepth':'3.0',        # add by nishi 2024.3.11 No Need
+          #'Vis/MeanInliersDistance':'3.0',  # add by nishi 2024.3.11 No Need
+          #'Kp/MaxDepth':'3.0',  # add by nishi 2024.3.11 No Need
+          #'Grid/MinGroundHeight':'0.01',   # add by nishi 2024.3.12 No Need
+          'Grid/MaxGroundHeight':'0.05',    # add by nishi 2024.3.12 Very Good!! 3[M] 先の床が障害物になるのを防ぐ
+          'Grid/MaxObstacleHeight':'0.7',   # add by nishi 2024.3.11 Needed
+          #'Grid/RangeMax':'2.8', # add by nishi 2024.3.11 Ok !!
     }
 
     remappings=[
