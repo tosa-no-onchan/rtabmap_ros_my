@@ -147,7 +147,9 @@ controller_server:
       #desired_linear_vel: 0.25
       #desired_linear_vel: 0.125
       # changed 2024.3.10
-      desired_linear_vel: 0.07
+      #desired_linear_vel: 0.07
+      # changed 2024.3.15
+      desired_linear_vel: 0.1
       # changed 2024.3.2
       # no good
       #desired_linear_vel: -0.125

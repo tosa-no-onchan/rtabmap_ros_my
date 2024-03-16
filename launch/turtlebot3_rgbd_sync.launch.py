@@ -33,7 +33,7 @@
 #
 #  2. rtabmap_ros with rgbd_sync
 #   SLAM:
-#   $ ros2 launch rtabmap_ros_my turtlebot3_rgbd_sync.launch.py
+#   $ ros2 launch rtabmap_ros_my turtlebot3_rgbd_sync.launch.py [localization:=true]
 #   OR
 #   $ ros2 launch rtabmap_launch rtabmap.launch.py visual_odometry:=false frame_id:=base_footprint subscribe_scan:=true  approx_sync:=true approx_rgbd_sync:=false odom_topic:=/odom args:="-d --RGBD/NeighborLinkRefining true --Reg/Strategy 1 --Reg/Force3DoF true --Grid/RangeMin 0.2" use_sim_time:=true rgbd_sync:=true rgb_topic:=/camera/image_raw depth_topic:=/camera/depth/image_raw camera_info_topic:=/camera/camera_info qos:=2
 #   $ ros2 run topic_tools relay /rtabmap/map /map
@@ -48,6 +48,8 @@
 #
 #  3.1 Rviz
 #   $ ros2 launch nav2_bringup rviz_launch.py
+#    下記もOK?
+#   $ rviz2 -d /home/nishi/colcon_ws/src/rtabmap_ros_my/launch/config/rgbd.rviz
 #
 #   Teleop:
 #     $ ros2 run turtlebot3_teleop teleop_keyboard
@@ -57,6 +59,10 @@
 #   #$ ros2 run turtlebot3_navi_my multi_goals4_nav2
 #   $ ros2 launch turtlebot3_navi_my multi_goals4_cmd_vel.launch.py use_sim_time:=True
 #   $ ros2 launch turtlebot3_navi_my multi_goals4_nav2.launch.py use_sim_time:=True
+#
+# append.
+# how to map save
+# ros2 run nav2_map_server map_saver_cli -f ~/map/house_map --ros-args -p save_map_timeout:=10000.0
 
 
 from launch import LaunchDescription

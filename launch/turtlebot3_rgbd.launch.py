@@ -50,6 +50,8 @@
 #
 #  4. rviz
 #   $ ros2 launch nav2_bringup rviz_launch.py
+#    下記もOK?
+#   $ rviz2 -d /home/nishi/colcon_ws/src/rtabmap_ros_my/launch/config/rgbd.rviz or fox-nav2.rviz
 #
 #   Teleop:
 #     $ ros2 run turtlebot3_teleop teleop_keyboard
@@ -77,6 +79,8 @@ def generate_launch_description():
     localization = LaunchConfiguration('localization')
     cloud_xyzrgb = LaunchConfiguration('cloud_xyzrgb')
 
+    # how to check rtabmap_ros params
+    # rtabmap --params | grep RGBD/OptimizeMaxError
     parameters={
           'frame_id':'base_footprint',
           'use_sim_time':use_sim_time,
@@ -93,6 +97,8 @@ def generate_launch_description():
           'Grid/MaxGroundHeight':'0.05',    # add by nishi 2024.3.12 Very Good!! 3[M] 先の床が障害物になるのを防ぐ
           'Grid/MaxObstacleHeight':'0.7',   # add by nishi 2024.3.11 Needed
           #'Grid/RangeMax':'2.8', # add by nishi 2024.3.11 Ok !!
+          #'RGBD/OptimizeMaxError' : '3.3',  # test by nishi 2024.3.12
+          'RGBD/OptimizeMaxError' : '2.8',  # test by nishi 2024.3.12
     }
 
     remappings=[
