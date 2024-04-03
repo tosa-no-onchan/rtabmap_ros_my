@@ -60,6 +60,12 @@
 #   $ ros2 launch turtlebot3_navi_my multi_goals4_cmd_vel.launch.py use_sim_time:=True
 #   $ ros2 launch turtlebot3_navi_my multi_goals4_nav2.launch.py use_sim_time:=True
 #
+#  5. C++ Auto Mower
+#   SLAM: localization go
+#   $ ros2 launch rtabmap_ros_my turtlebot3_rgbd_sync.launch.py localization:=true
+#
+#   $ ros2 launch turtlebot3_navi_my go_auto_mower.launch.py use_sim_time:=True
+#
 # append.
 # how to map save
 # ros2 run nav2_map_server map_saver_cli -f ~/map/house_map --ros-args -p save_map_timeout:=10000.0
