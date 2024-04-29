@@ -72,7 +72,7 @@
 #   $ ros2 run turtlebot3_teleop teleop_keyboard
 #  or
 #  2) On SBC C++ Program control include heart_beat function.
-#   #$ ros2 run turtlebot3_navi_my multi_goals4_nav2
+#   #$ ros2 launch turtlebot3_navi_my multi_goals4_cmd_vel.launch.py use_sim_time:=False
 #   $ ros2 launch turtlebot3_navi_my multi_goals4_nav2.launch.py use_sim_time:=False
 #
 #   check
@@ -127,15 +127,16 @@ def generate_launch_description():
     uvc_camera = get_package_share_directory('uvc_camera')
     stereo_image_proc = get_package_share_directory('stereo_image_proc')
     rtabmap_ros_my = get_package_share_directory('rtabmap_ros_my')
-    gysfdmaxb_gps=get_package_share_directory('gysfdmaxb_gps')
+    #gysfdmaxb_gps=get_package_share_directory('gysfdmaxb_gps')
+    lc29h_gps_rtk=get_package_share_directory('lc29h_gps_rtk')
 
     rtabmap_parameters={
+        "frame_id": "base_footprint",
         "subscribe_depth": False,
         "subscribe_rgbd": True,
         "subscribe_scan": False,
         "subscribe_scan_cloud":False,
         "subscribe_stereo": False,
-        "frame_id": "base_footprint",
         "approx_sync": True,
         "queue_size": 10,
         "qos_image": qos,
@@ -148,7 +149,14 @@ def generate_launch_description():
         #'tf_delay':0.04545,      # 22[hz] default 0.05  20[hz]
         #'tf_delay':0.0625,      # 16[hz] default 0.05  20[hz]   PC and teb_local_planner is needed
         # add by nishi 2023.3.3
-        "Stereo/MaxDisparity": "800.0",
+        #"Stereo/MaxDisparity": "800.0",
+        # add by nishi 2024.4.28
+        'Grid/RangeMax':'2.0',    # add by nishi 
+        #'Grid/MaxGroundHeight':'0.05',    # add by nishi 2024.3.12 Very Good!! 3[M] 先の床が障害物になるのを防ぐ
+        #'Grid/MaxGroundHeight':'0.07',    # add by nishi 2024.3.12 Very Good!! 3[M] 先の床が障害物になるのを防ぐ
+        'Grid/MaxGroundHeight':'0.1',    # add by nishi 2024.3.12 Very Good!! 3[M] 先の床が障害物になるのを防ぐ
+        'Grid/MaxObstacleHeight':'0.7',   # add by nishi 2024.3.11 Needed
+
     }
     rtabmap_remappings=[
         # subscribe
@@ -242,11 +250,12 @@ def generate_launch_description():
 
                 IncludeLaunchDescription(
                     PythonLaunchDescriptionSource(
-                        os.path.join(gysfdmaxb_gps,'launch', 'gysfdmaxb_gps.launch.py')
+                        #os.path.join(gysfdmaxb_gps,'launch', 'gysfdmaxb_gps.launch.py')
+                        os.path.join(lc29h_gps_rtk,'launch', 'lc29h_gps_rtk.launch.py')
                     ),
                     launch_arguments={
-                        'rate':'6',
-                        #'rate':'8',
+                        #'rate':'6',
+                        'rate':'1',
                         'device':'/dev/ttyUSB0',
                         'topicName':'/gps/fix'}.items(),
                     condition=IfCondition(LaunchConfiguration('gps')),

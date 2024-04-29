@@ -1,5 +1,6 @@
 ### ekf config file ###
-# https://github.com/cra-ros-pkg/robot_localization/blob/foxy-devel/doc/configuring_robot_localization.rst
+# https://github.com/cra-ros-pkg/robot_localization/blob/humble-devel/doc/configuring_robot_localization.rst
+# http://docs.ros.org/en/melodic/api/robot_localization/html/state_estimation_nodes.html
 ekf_filter_node:
     ros__parameters:
       # mode1.yaml
@@ -18,12 +19,17 @@ ekf_filter_node:
       publish_tf: true
       #publish_tf: false
       publish_acceleration: false
+      # memo nishi 2024.4.29
+      # use_control: true If true, the state estimation node will listen to the cmd_vel topic 
+      #             for a geometry_msgs/Twist message, and use that to generate an acceleration term. 
 
       map_frame: map
       odom_frame: odom
       base_link_frame: base_footprint
       #base_link_frame: base_link
       #world_frame: map           # Defaults to the value of odom_frame if unspecified
+      # update by nishi 2024.4.29 
+      world_frame: odom           # Defaults to the value of odom_frame if unspecified
 
       #odom0: wheel odometry
       odom0: wheel

@@ -137,7 +137,9 @@ controller_server:
       xy_goal_tolerance: 0.05
       #yaw_goal_tolerance: 0.25
       # changed by nishi
-      yaw_goal_tolerance: 0.08
+      #yaw_goal_tolerance: 0.08
+      # changed by nishi 2024.4.24
+      yaw_goal_tolerance: 0.07
       stateful: True
 
     # rpp parameter
@@ -171,7 +173,9 @@ controller_server:
       regulated_linear_scaling_min_speed: 0.25
       use_rotate_to_heading: true
       allow_reversing: false
-      rotate_to_heading_min_angle: 0.785
+      #rotate_to_heading_min_angle: 0.785
+      # changed by nishi 2024.4.24
+      rotate_to_heading_min_angle: 0.3925
       #max_angular_accel: 3.2
       # changed by nishi
       #max_angular_accel: 1.6

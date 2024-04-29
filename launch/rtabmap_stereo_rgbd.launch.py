@@ -126,12 +126,12 @@ def generate_launch_description():
     rtabmap_ros_my = get_package_share_directory('rtabmap_ros_my')
 
     rtabmap_parameters={
+        "frame_id": "base_footprint",
         "subscribe_depth": False,
         "subscribe_rgbd": True,
         "subscribe_scan": False,
         "subscribe_scan_cloud":False,
         "subscribe_stereo": False,
-        "frame_id": "base_footprint",
         "approx_sync": True,
         #"queue_size": 10,
         "queue_size": 30,
@@ -143,6 +143,12 @@ def generate_launch_description():
         #"Mem/IncrementalMemory":"True",
         #"Mem/InitWMWithAllNodes": "False",
         'tf_delay':0.0625,      # default 0.05  20[hz]
+        # add by nishi 2024.4.28
+        'Grid/RangeMax':'2.0',    # add by nishi 
+        #'Grid/MaxGroundHeight':'0.05',    # add by nishi 2024.3.12 Very Good!! 3[M] 先の床が障害物になるのを防ぐ
+        #'Grid/MaxGroundHeight':'0.07',    # add by nishi 2024.3.12 Very Good!! 3[M] 先の床が障害物になるのを防ぐ
+        'Grid/MaxGroundHeight':'0.1',    # add by nishi 2024.3.12 Very Good!! 3[M] 先の床が障害物になるのを防ぐ
+        'Grid/MaxObstacleHeight':'0.7',   # add by nishi 2024.3.11 Needed
     }
     rtabmap_remappings=[
         # subscribe
