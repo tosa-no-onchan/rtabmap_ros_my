@@ -32,7 +32,7 @@ Gazebo House and Turtlebot3 で、部屋の中を自動で動き回って、Hous
     rtabmap_stereo_rgbd_gps.launch.py  
 
 #### 3.1 Run real Robot(foxbot_core3_r2) with OAK-D Lite and Gps   
-Active SLAM and Mapping  
+Active SLAM and Mapping with rtabmap_ros  
     
     rtabmap_oak-d_rgb_depth_gps.launch.py  
     rtabmap_oak-d_stereo_gps.launch.py 
