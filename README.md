@@ -15,14 +15,14 @@ rtabmap_ros が実行できる、 launch ファイル。
     turtlebot3_scan.launch.py  
     turtlebot3_rgbd.launch.py  
     turtlebot3_rgbd_sync.launch.py  
-    
-    turtlebot3_rgbd.launch.py または、turtlebot3_rgbd_sync.launch.py の中の記載に従って  
-    $ ros2 launch turtlebot3_navi_my multi_goals4_nav2.launch.py use_sim_time:=True  
-    を実行すれば、  
-    Gazebo House and Turtlebot3 で、部屋の中を自動で動き回って、House の Mapping をします。  
-    
-    注)turtlebot3_rgbd_sync.launch.py の rtabmap, point_cloud_xyzrgb の qos=1 に修正しました。by nishi 2024.9.16  
-    これで、turtlebot3_rgbd_sync.launch.py でも、 C++ Auto Map が問題なく動くと思います。  
+
+turtlebot3_rgbd.launch.py または、turtlebot3_rgbd_sync.launch.py の中の記載に従って  
+$ ros2 launch turtlebot3_navi_my multi_goals4_nav2.launch.py use_sim_time:=True  
+を実行すれば、  
+Gazebo House and Turtlebot3 で、部屋の中を自動で動き回って、House の Mapping をします。  
+
+注)turtlebot3_rgbd_sync.launch.py の rtabmap, point_cloud_xyzrgb の qos=1 に修正しました。by nishi 2024.9.16  
+これで、turtlebot3_rgbd_sync.launch.py でも、 C++ Auto Map が問題なく動くと思います。  
 
 [turtlebot3_navi_my](https://github.com/tosa-no-onchan/turtlebot3_navi_my)  
     
