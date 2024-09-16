@@ -31,6 +31,18 @@ rtabmap_ros が実行できる、 launch ファイル。
     rtabmap_stereo_rgbd.launch.py  
     rtabmap_stereo_rgbd_gps.launch.py  
 
+#### 3.1 Run real Robot(foxbot_core3_r2) with OAK-D Lite and Gps   
+Active SLAM and Mapping  
+    
+    rtabmap_oak-d_rgb_depth_gps.launch.py  
+    rtabmap_oak-d_stereo_gps.launch.py 
+
+#### 3.2 Run real Robot(foxbot_core3_r2) with Gps, Navigation only   
+A prebuild static Map is necessary.
+    
+    foxbot_nav2_oak-d_depth_gps.launch.py  
+    foxbot_nav2_stereo_gps.launch.py  
+
 #### 4. Update.    
 2033.12.18  
     
