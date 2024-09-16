@@ -46,4 +46,12 @@ rtabmap_ros が実行できる、 launch ファイル。
     support ros2 humble and updated rtabmap and rtabmap_ros  
     turtlebot3_rgbd.launch.py  
     turtlebot3_rgbd_sync.launch.py
-    
+
+2024.9.16  
+
+    append launch  
+    foxbot_nav2_oak-d_depth_gps.launch.py  
+    foxbot_nav2_stereo_gps.launch.py  
+    rtabmap_oak-d_rgb_depth_gps.launch.py  
+    rtabmap_oak-d_stereo_gps.launch.py  
+
