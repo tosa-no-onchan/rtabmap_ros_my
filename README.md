@@ -1,6 +1,6 @@
 ## rtabmap_ros_my for Ros2 humble
     
-ROS2 対応 自作 Turtlebot3(foxbot_core3_r2.ino) で、 Single USB Stereo Camera を使って    
+ROS2 対応 自作 Turtlebot3(foxbot_core3_r2.ino) で、 Single USB Stereo Camera, OAK-D Lite を使って    
 rtabmap_ros が実行できる、 launch ファイル。    
     
 ##### 1. インストール方法    
