@@ -31,11 +31,17 @@
 #   $ ros2 launch nav2_bringup navigation_launch.py use_sim_time:=True params_file:=/home/nishi/colcon_ws/src/rtabmap_ros_my/params/scan/nav2_params.yaml
 #       teb_local_planner
 #   $ ros2 launch nav2_bringup navigation_launch.py use_sim_time:=True params_file:=/home/nishi/colcon_ws/src/rtabmap_ros_my/params/scan/teb_nav2_params.yaml
+#       rpp_local_planner
+#   $ ros2 launch nav2_bringup navigation_launch.py use_sim_time:=True params_file:=/home/nishi/colcon_ws/src/rtabmap_ros_my/params/scan/rpp_nav2_params.yaml
 #
 #   $ ros2 launch nav2_bringup rviz_launch.py
 #
 #   4. C++ Program controll
-#   $ ros2 run turtlebot3_navi_my multi_goals4_nav2
+#   #$ ros2 run turtlebot3_navi_my multi_goals4_nav2
+#   $ ros2 launch turtlebot3_navi_my multi_goals4_nav2.launch.py use_sim_time:=True
+#
+#   #$ ros2 run turtlebot3_navi_my multi_goals4_cmd_vel
+#   $ ros2 launch turtlebot3_navi_my multi_goals4_cmd_vel.launch.py use_sim_time:=True
 #
 
 import os
@@ -91,13 +97,13 @@ def generate_launch_description():
           ('map','/map')]
 
     return LaunchDescription([
-
         DeclareLaunchArgument('PC', default_value='false', description='Launch SBC (optional).'),
         DeclareLaunchArgument('PC2', default_value='false', description='Launch SBC (optional).'),
 
         # Launch arguments
         DeclareLaunchArgument('use_sim_time', default_value='true', description='Use simulation (Gazebo) clock if true'),
-        DeclareLaunchArgument('qos', default_value='2', description='QoS used for input sensor topics'),
+        #DeclareLaunchArgument('qos', default_value='2', description='QoS used for input sensor topics'),
+        DeclareLaunchArgument('qos', default_value='1', description='QoS used for input sensor topics'),
         DeclareLaunchArgument('localization', default_value='false', description='Launch in localization mode.'),
 
         DeclareLaunchArgument('rtabmapviz',default_value='false', description='Launch rtabmapviz (optional).'),

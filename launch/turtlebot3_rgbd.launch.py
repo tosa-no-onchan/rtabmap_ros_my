@@ -29,6 +29,7 @@
 # Example:
 #  1. Gazebo
 #   $ export TURTLEBOT3_MODEL=waffle
+#   $ . /usr/share/gazebo/setup.sh
 #   $ ros2 launch turtlebot3_gazebo turtlebot3_house.launch.py
 #   how to kill Gazeb server
 #   $ killall gzserver
@@ -113,23 +114,13 @@ def generate_launch_description():
           ('depth/image', '/camera/depth/image_raw')]
 
     return LaunchDescription([
-
         # Launch arguments
-        DeclareLaunchArgument(
-            'use_sim_time', default_value='true',
-            description='Use simulation (Gazebo) clock if true'),
-        
-        DeclareLaunchArgument(
-            'qos', default_value='2',
-            description='QoS used for input sensor topics'),
-            
-        DeclareLaunchArgument(
-            'localization', default_value='false',
-            description='Launch in localization mode.'),
-
+        DeclareLaunchArgument('use_sim_time', default_value='true',description='Use simulation (Gazebo) clock if true'),
+        #DeclareLaunchArgument('qos', default_value='2',description='QoS used for input sensor topics'),
+        DeclareLaunchArgument('qos', default_value='1',description='QoS used for input sensor topics'),
+        DeclareLaunchArgument('localization', default_value='false',description='Launch in localization mode.'),
         DeclareLaunchArgument('rviz',default_value='false', description='Launch RVIZ (optional).'),
         #DeclareLaunchArgument('rviz_cfg', default_value=config_rviz, description='Configuration path of rviz2.'),
-
         DeclareLaunchArgument('cloud_xyzrgb',default_value='true', description='cloud_xyzrgb.'),
 
         # Nodes to launch
@@ -141,8 +132,8 @@ def generate_launch_description():
                 "voxel_size": 0.0,
                 "approx_sync": True,
                 "approx_sync_max_interval": 0.5,
-                #'qos': qos,
-                'qos': 0,
+                'qos': qos,
+                #'qos': 0,
             }],
             remappings=[
                 #('left/image', '/left/image'),

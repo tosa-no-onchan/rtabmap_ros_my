@@ -28,8 +28,11 @@
 # Example:
 #  1. Gazebo
 #   $ export TURTLEBOT3_MODEL=waffle
+#   $ . /usr/share/gazebo/setup.sh
 #   $ ros2 launch turtlebot3_gazebo turtlebot3_house.launch.py
 #   #$ ros2 launch turtlebot3_gazebo turtlebot3_world.launch.py
+#   how to kill Gazeb server
+#   $ killall gzserver
 #
 #  2. rtabmap_ros with rgbd_sync
 #   SLAM:
@@ -60,7 +63,10 @@
 #   $ ros2 launch turtlebot3_navi_my multi_goals4_cmd_vel.launch.py use_sim_time:=True
 #   $ ros2 launch turtlebot3_navi_my multi_goals4_nav2.launch.py use_sim_time:=True
 #
-#  5. C++ Auto Mower
+#  5. C++ Auto Map [navigation and slam]
+#   $ ros2 launch turtlebot3_navi_my go_auto_map.launch.py use_sim_time:=True
+#
+#  6. C++ Auto Mower
 #   SLAM: localization go
 #   $ ros2 launch rtabmap_ros_my turtlebot3_rgbd_sync.launch.py localization:=true
 #
@@ -126,22 +132,12 @@ def generate_launch_description():
 
 
     return LaunchDescription([
-
         # Launch arguments
-        DeclareLaunchArgument(
-            'use_sim_time', default_value='true',
-            description='Use simulation (Gazebo) clock if true'),
-        
-        DeclareLaunchArgument(
-            'qos', default_value='2',
-            description='QoS used for input sensor topics'),
-            
-        DeclareLaunchArgument(
-            'localization', default_value='false',
-            description='Launch in localization mode.'),
-
+        DeclareLaunchArgument('use_sim_time', default_value='true',description='Use simulation (Gazebo) clock if true'),
+        #DeclareLaunchArgument('qos', default_value='2',description='QoS used for input sensor topics'),
+        DeclareLaunchArgument('qos', default_value='1',description='QoS used for input sensor topics'),
+        DeclareLaunchArgument('localization', default_value='false',description='Launch in localization mode.'),
         DeclareLaunchArgument('rviz',default_value='false', description='Launch RVIZ (optional).'),
-
         DeclareLaunchArgument('namespace', default_value='rtabmap', description=''),
 
         # Nodes to launch

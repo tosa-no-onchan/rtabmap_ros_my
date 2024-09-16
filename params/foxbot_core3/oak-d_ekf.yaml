@@ -1,6 +1,8 @@
 ### ekf config file ###
 # https://github.com/cra-ros-pkg/robot_localization/blob/humble-devel/doc/configuring_robot_localization.rst
 # http://docs.ros.org/en/melodic/api/robot_localization/html/state_estimation_nodes.html
+#
+# foxbot_core3/oak-d_ekf.yaml
 ekf_filter_node:
     ros__parameters:
       # mode1.yaml
@@ -9,9 +11,10 @@ ekf_filter_node:
       #frequency: 30.0
       #frequency: 4.0
       # changed by nishi 2024.5.2
-      frequency: 6.0
+      #frequency: 6.0
       # changed by nishi 2024.5.3
-      #frequency: 8.0
+      frequency: 7.0
+      #frequency: 15.0
       #sensor_timeout: 0.1
       sensor_timeout: 1.0
       two_d_mode: true
@@ -43,17 +46,17 @@ ekf_filter_node:
                     true, true, false]
 
       odom1: odom_gps
-      #odom1_config: [false, false, false,
-      #              false, false, false,
-      #              false, false, false,
-      #              false, false, false,
-      #              false, false, false]
-
-      odom1_config: [true, true, false,
+      odom1_config: [false, false, false,
                     false, false, false,
                     false, false, false,
                     false, false, false,
                     false, false, false]
+
+      #odom1_config: [true, true, false,
+      #              false, false, false,
+      #              false, false, false,
+      #              false, false, false,
+      #              false, false, false]
 
 
       imu0: imu0

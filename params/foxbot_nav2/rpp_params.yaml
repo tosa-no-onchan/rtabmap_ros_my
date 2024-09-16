@@ -138,6 +138,8 @@ controller_server:
       #yaw_goal_tolerance: 0.25
       # changed by nishi
       #yaw_goal_tolerance: 0.08
+      # changed by nishi 2024.4.23
+      #yaw_goal_tolerance: 0.06
       # changed by nishi 2024.4.24
       yaw_goal_tolerance: 0.07
       stateful: True
@@ -176,15 +178,12 @@ controller_server:
       #rotate_to_heading_min_angle: 0.785
       # changed by nishi 2024.4.24
       rotate_to_heading_min_angle: 0.3925
-      # changed by nishi 2024.5.1
-      #rotate_to_heading_min_angle: 0.2
       #max_angular_accel: 3.2
       # changed by nishi
       #max_angular_accel: 1.6
       #max_angular_accel: 0.8
-      # changged by nishi 2024.5.1
+      # changed by nishi 2024.4.23
       max_angular_accel: 0.6
-      #max_angular_accel: 0.3
       max_robot_pose_search_dist: 10.0
       use_interpolation: false
 
@@ -211,7 +210,7 @@ local_costmap:
       #plugins: ["voxel_layer", "inflation_layer"]
       #plugins: ["obstacle_layer", "inflation_layer"]
       #plugins: ["static_layer", "obstacle_layer", "inflation_layer"]
-      plugins: ["obstacle_layer", "inflation_layer"]
+      plugins: ["obstacle_layer"]
       # https://navigation.ros.org/configuration/packages/costmap-plugins/inflation.html
       inflation_layer:
         plugin: "nav2_costmap_2d::InflationLayer"
@@ -246,6 +245,7 @@ local_costmap:
           obstacle_min_range: 0.0
         # add by nishi 2023.1.20
         point_cloud_sensor: 
+          #sensor_frame: camera
           sensor_frame: left_camera
           data_type: "PointCloud2"
           topic: /cloudXYZ
@@ -300,6 +300,7 @@ global_costmap:
           obstacle_min_range: 0.0
         # add by nishi 2023.1.20
         point_cloud_sensor: 
+          #sensor_frame: camera
           sensor_frame: left_camera
           data_type: "PointCloud2"
           topic: /cloudXYZ
@@ -327,7 +328,7 @@ global_costmap:
         #inflation_radius: 0.35
         #inflation_radius: 0.28
         #inflation_radius: 0.25
-        inflation_radius: 0.20
+        inflation_radius: 0.2
       always_send_full_costmap: True
 
 map_server:
