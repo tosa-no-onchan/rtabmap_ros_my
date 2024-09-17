@@ -45,7 +45,7 @@ A prebuild static Map is necessary.
     foxbot_nav2_stereo_gps.launch.py  
 
 #### 4. Update.    
-2033.12.18  
+2023.12.18  
     
     support ros2 foxy    
     
