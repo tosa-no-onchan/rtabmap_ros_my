@@ -38,6 +38,7 @@ Active SLAM and Mapping with rtabmap_ros
     rtabmap_oak-d_stereo_gps.launch.py 
 
 #### 3.2 Run real Robot(foxbot_core3_r2) with Gps, Navigation only   
+ekf robot_localization and navigation2  
 A prebuild static Map is necessary.
     
     foxbot_nav2_oak-d_depth_gps.launch.py  
