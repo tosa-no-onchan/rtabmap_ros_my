@@ -71,3 +71,6 @@ A prebuild static Map is necessary.
     rtabmap_oak-d_rgb_depth_gps.launch.py  
     rtabmap_oak-d_stereo_gps.launch.py  
 
+#### 5. reffrence page.    
+
+  [tosa-no-onchan/foxbot_core3](https://github.com/tosa-no-onchan/foxbot_core3/)
