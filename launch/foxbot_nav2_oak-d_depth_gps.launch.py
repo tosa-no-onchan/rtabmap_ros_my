@@ -37,7 +37,7 @@
 #   $ sudo chmod 777 /dev/video0    ->  video
 #   $ ros2 run micro_ros_agent micro_ros_agent serial --dev /dev/ttyS0 -b 1000000 [-v6]
 #
-#  2) term2 camera etc.
+#  2) term2 camera,gps etc.
 #   $ ros2 launch rtabmap_ros_my foxbot_nav2_oak-d_depth_gps.launch.py SBC:=true
 #
 #  Map Server static map load
@@ -45,7 +45,7 @@
 #   $ ros2 launch rtabmap_ros_my localization.launch.py
 #
 #  navigation2 
-#  4'') navigation2 rpp_planner
+#  4) navigation2 rpp_planner
 #   $ ros2 launch nav2_bringup navigation_launch.py use_sim_time:=False params_file:=/home/nishi/colcon_ws/src/rtabmap_ros_my/params/foxbot_nav2/oak-d_rpp_params.yaml
 #
 # 5. Rviz2 on Remote PC
@@ -60,7 +60,16 @@
 #   #$ ros2 launch turtlebot3_navi_my multi_goals4_cmd_vel.launch.py use_sim_time:=False
 #   $ ros2 launch turtlebot3_navi_my multi_goals4_nav2.launch.py use_sim_time:=False
 #
+# 6.1 C++ Auto Mower [localization and  navigation]
+#   $ ros2 launch turtlebot3_navi_my go_auto_mower.launch.py use_sim_time:=False robo_radius:=0.15 cource_harf_width:=3 r_lng:=0.25 move_l:=0.06 [plann_test:=True]
+#     cource_harf_width:=3[dot] 走行線の間隔の半分 3*0.05=0.15[m]
+#
+#   $ ros2 launch turtlebot3_navi_my go_auto_mower.launch.py use_sim_time:=False robo_radius:=0.20 cource_harf_width:=3 r_lng:=0.25 move_l:=0.06 [plann_test:=True]
+#
 #  [multi_goals4_nav2-1] GetMap::get(): 99 error が出たら、SBC 上で実行する。 2024.2.10
+#    -> これは、qos=1 になっていないのでは?
+#     /home/nishi/colcon_ws/src/turtlebot3_navi_my/src/pro_control_sub.cpp 
+#        GetMap::init() の中!!
 #
 # append.
 # how to map save
@@ -114,6 +123,10 @@ def generate_launch_description():
     #lc29h_gps=get_package_share_directory('lc29h_gps')
     lc29h_gps_rtk=get_package_share_directory('lc29h_gps_rtk')
 
+    auto_exp       = LaunchConfiguration('auto_exp', default = True)
+    sensIso        = LaunchConfiguration('sensIso', default = 1200)
+    expTime        = LaunchConfiguration('expTime', default = 28500)
+
     rtabmap_parameters={
         "subscribe_depth": False,
         "subscribe_rgbd": True,
@@ -150,18 +163,25 @@ def generate_launch_description():
         DeclareLaunchArgument('PC2',default_value='false', description='Launch SBC (optional).'),
         DeclareLaunchArgument('MAP',default_value='false', description='Launch SBC (optional).'),
         DeclareLaunchArgument('NAV2',default_value='false', description='Launch SBC (optional).'),
+
         #DeclareLaunchArgument('qos', default_value='2', description='QoS used for input sensor topics'),
         DeclareLaunchArgument('qos', default_value='1', description='QoS used for input sensor topics'),
         DeclareLaunchArgument('localization', default_value='false', description='Launch in localization mode.'),
         DeclareLaunchArgument('namespace', default_value='rtabmap', description=''),
+
         DeclareLaunchArgument('rviz',default_value='true', description='Launch RVIZ (optional).'),
         #DeclareLaunchArgument('rviz_cfg', default_value=config_rviz,description='Configuration path of rviz2.'),
         DeclareLaunchArgument('rviz_cfg_fox_nav2', default_value=config_rviz_fox_nav2,description='Configuration path of rviz2.'),
+
         DeclareLaunchArgument('gps',default_value='true', description=''),
+
+        DeclareLaunchArgument('rate',default_value='10', description=''),
+        DeclareLaunchArgument('queue_size',default_value='2', description=''),
+        DeclareLaunchArgument('rgb2grey',default_value='false', description=''),
 
         DeclareLaunchArgument(
             'map',
-            default_value=os.path.join('/','home','nishi','map','my_map.yaml'),
+            default_value=os.path.join('/','home','nishi','map','my_map7.yaml'),
             description='Full path to map yaml file to load'),
 
         # /home/nishi/colcon_ws/src/rtabmap_ros_my/params/foxbot_core3/nav2_params.yaml
@@ -261,8 +281,13 @@ def generate_launch_description():
                     PythonLaunchDescriptionSource(
                         os.path.join(depthai_ros_my , 'launch', 'oak-d_rgb_stereo_node.launch.py')
                     ),
-                    launch_arguments={'rate': '10',
-                                      'queue_size':'2'}.items(),
+                    launch_arguments={'rate': LaunchConfiguration('rate'),
+                                      'queue_size': LaunchConfiguration('queue_size'),
+                                      'rgb2grey': LaunchConfiguration('rgb2grey'),
+                                      'auto_exp': auto_exp,
+                                      'sensIso': sensIso,
+                                      'expTime': expTime,
+                                      }.items(),
                     # publish
                     # /color/video/camera_info
                     # /color/video/image

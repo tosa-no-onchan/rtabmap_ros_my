@@ -36,7 +36,7 @@
 #  2) term2 start Camera, GPS, static_transform_publisher and others.
 #   $ ros2 launch rtabmap_ros_my rtabmap_stereo_rgbd_gps.launch.py SBC:=true
 #
-#  3) term3
+#  3) term3 start rtabmap_ros
 #   check topic
 #     $ ros2 topic hz /odom
 #   run rtabmap_ros on SBC
@@ -53,15 +53,15 @@
 # 6. Active SLAM Mapping with navigation2 On SBC
 #  6.1 run navigation2 on SBC
 #  1) navigation2 dwa
-#   $ ros2 launch nav2_bringup navigation_launch.py use_sim_time:=False params_file:=/home/nishi/colcon_ws/src/rtabmap_ros_my/params/foxbot_core3/nav2_params_ekf.yaml
+#   #$ ros2 launch nav2_bringup navigation_launch.py use_sim_time:=False params_file:=/home/nishi/colcon_ws/src/rtabmap_ros_my/params/foxbot_core3/nav2_params_ekf.yaml
 #
 #  1') navigation2 teb_local_planner
-#   $ ros2 launch nav2_bringup navigation_launch.py use_sim_time:=False params_file:=/home/nishi/colcon_ws/src/rtabmap_ros_my/params/foxbot_core3/teb_params_ekf.yaml
+#   #$ ros2 launch nav2_bringup navigation_launch.py use_sim_time:=False params_file:=/home/nishi/colcon_ws/src/rtabmap_ros_my/params/foxbot_core3/teb_params_ekf.yaml
 #
 #  1'') navigation2 rpp_planner
 #   $ ros2 launch nav2_bringup navigation_launch.py use_sim_time:=False params_file:=/home/nishi/colcon_ws/src/rtabmap_ros_my/params/foxbot_core3/rpp_params_ekf.yaml
 #
-#  6.2 on Remote PC
+#  6.2 on Remote PC  Rviz2
 #  1) Rviz2
 #    $ ros2 launch nav2_bringup rviz_launch.py
 #     or
@@ -138,8 +138,10 @@ def generate_launch_description():
         "subscribe_scan_cloud":False,
         "subscribe_stereo": False,
         "approx_sync": True,
-        "queue_size": 10,
+        "queue_size": 15,
         #"queue_size": 20,
+        "sync_queue_size": 15,  # add by nishi 2024.9.10
+        "topic_queue_size": 15, # add by nishi 2024.9.10
         "qos_image": qos,
         "qos_camera_info": qos,
         "qos_user_data": qos,
@@ -159,13 +161,14 @@ def generate_launch_description():
         'Grid/RangeMax': '3.0',    # add by nishi 
         #'Grid/RangeMax': '2.5',    # add by nishi 
         #'Grid/MaxGroundHeight': '0.05',    # add by nishi 2024.3.12 Very Good!! 3[M] 先の床が障害物になるのを防ぐ
-        #'Grid/MaxGroundHeight': '0.07',    # add by nishi 2024.3.12 Very Good!! 3[M] 先の床が障害物になるのを防ぐ
+        'Grid/MaxGroundHeight': '0.07',    # add by nishi 2024.3.12 Very Good!! 3[M] 先の床が障害物になるのを防ぐ
         #'Grid/MaxGroundHeight': '0.1',    # add by nishi 2024.3.12 Very Good!! 3[M] 先の床が障害物になるのを防ぐ
-        'Grid/MaxGroundHeight': '0.12',    # add by nishi 2024.3.12 Very Good!! 3[M] 先の床が障害物になるのを防ぐ
-        'Grid/MaxObstacleHeight': '0.7',   # add by nishi 2024.3.11 Needed
+        #'Grid/MaxGroundHeight': '0.12',    # add by nishi 2024.3.12 Very Good!! 3[M] 先の床が障害物になるのを防ぐ
+        #'Grid/MaxObstacleHeight': '0.7',   # add by nishi 2024.3.11 Needed
+        'Grid/MaxObstacleHeight': '1.0',   # add by nishi 2024.3.11 Needed
         'Rtabmap/TimeThr': '700.0',
         'RGBD/OptimizeMaxError': '3.4',    # add by nishi 2024.5.1
-        'Odom/FilteringStrategy': '2',     # add by nishi 2024.5.1 0=No filtering 1=Kalman filtering 2=Particle filtering
+        'Odom/FilteringStrategy': '1',     # add by nishi 2024.5.1 0=No filtering 1=Kalman filtering 2=Particle filtering
     }
     rtabmap_remappings=[
         # subscribe
@@ -197,7 +200,8 @@ def generate_launch_description():
         DeclareLaunchArgument('PC',default_value='false', description='Launch SBC (optional).'),
         DeclareLaunchArgument('PC2',default_value='false', description='Launch SBC (optional).'),
 
-        DeclareLaunchArgument('qos', default_value='2', description='QoS used for input sensor topics'),
+        #DeclareLaunchArgument('qos', default_value='2', description='QoS used for input sensor topics'),
+        DeclareLaunchArgument('qos', default_value='1', description='QoS used for input sensor topics'),
         DeclareLaunchArgument('localization', default_value='false', description='Launch in localization mode.'),
         DeclareLaunchArgument('namespace', default_value='rtabmap', description=''),
 
@@ -276,8 +280,8 @@ def generate_launch_description():
                         os.path.join(uvc_camera, 'launch', 'single_stereo_node.launch.py')
                     ),
                     #launch_arguments={'left/device': '/dev/video0'}.items(),
-                    #launch_arguments={'left/device': '/dev/video0','qos': '1' , 'intra':'False', 'trace':'True', 'fps': '15' }.items(),
-                    launch_arguments={'left/device': '/dev/video0','qos': '1' , 'intra':'False', 'trace':'True', 'fps': '20' }.items(),
+                    launch_arguments={'left/device': '/dev/video0','qos': '1' , 'intra':'False', 'trace':'True', 'fps': '15' }.items(),
+                    #launch_arguments={'left/device': '/dev/video0','qos': '1' , 'intra':'False', 'trace':'True', 'fps': '20' }.items(),
                     # publish
                     # /left/camera_info
                     # /left/image_raw
@@ -321,12 +325,12 @@ def generate_launch_description():
                         #"queue_size": 10,
                         "queue_size": 5,
                         "qos": qos,
-                        "qos_camera_info": 0}],
+                        "qos_camera_info": qos}],
                     remappings=[
-                        #("left/image_rect", '/left/image_rect_color'),
-                        ("left/image_rect", '/left/image_rect'),
-                        #("right/image_rect", '/right/image_rect_color'),
-                        ("right/image_rect", '/right/image_rect'),
+                        ("left/image_rect", '/left/image_rect_color'),
+                        #("left/image_rect", '/left/image_rect'),
+                        ("right/image_rect", '/right/image_rect_color'),
+                        #("right/image_rect", '/right/image_rect'),
                         ("left/camera_info", '/left/camera_info'),
                         ("right/camera_info", '/right/camera_info'),
                         #("rgbd_image", '/rgbd_image')

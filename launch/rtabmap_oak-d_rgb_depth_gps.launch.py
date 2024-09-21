@@ -40,7 +40,7 @@
 #   #$ ros2 launch rtabmap_ros_my rtabmap_oak-d_rgb_depth_gps.launch.py SBC:=true rate:=12 queue_size:=2
 #   #$ ros2 launch rtabmap_ros_my rtabmap_oak-d_rgb_depth_gps.launch.py SBC:=true rate:=10 queue_size:=2
 #
-#  3) term3
+#  3) term3 start rtabmap_ros
 #   check topic
 #     $ ros2 topic hz /odom
 #   run rtabmap_ros on SBC
@@ -74,8 +74,8 @@
 #   #$ ros2 launch turtlebot3_navi_my multi_goals4_cmd_vel.launch.py use_sim_time:=False
 #   $ ros2 launch turtlebot3_navi_my multi_goals4_nav2.launch.py use_sim_time:=False
 #
-#   check
-#   $ ros2 topic hz /fox_beat
+#   #check
+#   #$ ros2 topic hz /fox_beat
 #
 # append.
 # how to map save ,on Remote PC OK
@@ -130,9 +130,9 @@ def generate_launch_description():
     lc29h_gps_rtk=get_package_share_directory('lc29h_gps_rtk')
 
 
-    auto_exp       = LaunchConfiguration('auto_exp', default = False)
-    sensIso        = LaunchConfiguration('sensIso', default = 1000)
-    expTime        = LaunchConfiguration('expTime', default = 27500)
+    auto_exp       = LaunchConfiguration('auto_exp', default = True)
+    sensIso        = LaunchConfiguration('sensIso', default = 1200)
+    expTime        = LaunchConfiguration('expTime', default = 28500)
 
     # subscribe_depth: True
     rtabmap_parameters={

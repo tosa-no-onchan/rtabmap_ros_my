@@ -1,3 +1,4 @@
+# colcon_ws/src/navigation2/nav2_bringup/params/nav2_params.yaml
 amcl:
   ros__parameters:
     use_sim_time: True
@@ -361,18 +362,28 @@ planner_server:
     # changed by nishi 2023.4.1
     #use_sim_time: True
     use_sim_time: False
-    planner_plugins: ["GridBased"]
+    #planner_plugins: ["GridBased"]
+    #GridBased:
+    #  plugin: "nav2_navfn_planner/NavfnPlanner"
+    #  #tolerance: 0.5
+    #  # test by nishi
+    #  #tolerance: 0.1
+    #  # 0.1 is too small
+    #  # 2024.9.13 by nishi
+    #  #tolerance: 0.3
+    #  tolerance: 0.5
+    #  use_astar: false
+    #  allow_unknown: true
+    # add by nishi 2024.9.18
+    # https://github.com/ros-navigation/navigation2/tree/main/nav2_theta_star_planner
+    planner_plugin_types: ["nav2_theta_star_planner::ThetaStarPlanner"]
+    planner_plugin_ids: ["GridBased"]
     GridBased:
-      plugin: "nav2_navfn_planner/NavfnPlanner"
-      #tolerance: 0.5
-      # test by nishi
-      #tolerance: 0.1
-      # 0.1 is too small
-      # 2024.9.13 by nishi
-      #tolerance: 0.3
+      how_many_corners: 8
+      w_euc_cost: 1.0
+      w_traversal_cost: 2.0
+      # add by nishi
       tolerance: 0.5
-      use_astar: false
-      allow_unknown: true
 
 smoother_server:
   ros__parameters:
