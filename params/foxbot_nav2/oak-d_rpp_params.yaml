@@ -262,7 +262,9 @@ local_costmap:
           #min_obstacle_height: 0.3
           # changed by nishi 2024.9.8
           min_obstacle_height: 0.16
-          max_obstacle_height: 0.7
+          #max_obstacle_height: 0.7
+          # changed by nishi 2024.9.22
+          max_obstacle_height: 0.65
           # add by nishi 2023.1.23
           #observation_persistence: 3.0
 
@@ -317,7 +319,9 @@ global_costmap:
           #min_obstacle_height: 0.3
           # changed by nishi 2024.9.8
           min_obstacle_height: 0.16
-          max_obstacle_height: 0.7
+          #max_obstacle_height: 0.7
+          # changed by nishi 2024.9.22
+          max_obstacle_height: 0.65
           # add by nishi 2023.1.23
           #observation_persistence: 3.0
 
