@@ -61,13 +61,10 @@
 #   $ ros2 launch turtlebot3_navi_my multi_goals4_nav2.launch.py use_sim_time:=False
 #
 # 6.1 C++ Auto Mower [localization and  navigation]
-#   $ ros2 launch turtlebot3_navi_my go_auto_mower.launch.py use_sim_time:=False robo_radius:=0.15 cource_width:=6 r_lng:=0.25 move_l:=0.06 [plann_test:=True]
-#     cource_harf_width:=3[dot] 走行線の間隔の半分 3*0.05=0.15[m]
-#
-#   $ ros2 launch turtlebot3_navi_my go_auto_mower.launch.py use_sim_time:=False robo_radius:=0.20 cource_width:=6 r_lng:=0.2 move_l:=0.06 [plann_test:=True]
-#   $ ros2 launch turtlebot3_navi_my go_auto_mower.launch.py use_sim_time:=False robo_radius:=0.20 cource_width:=6 r_lng:=0.2 move_l:=0.05 [plann_test:=True]
-#
-#   $ ros2 launch turtlebot3_navi_my go_auto_mower.launch.py use_sim_time:=False robo_radius:=0.15 cource_width:=4 safe_margin:=4 safe_margin_dt:=5 r_lng:=0.2 move_l:=0.05 [plann_test:=True]
+#   $ export LD_LIBRARY_PATH=/home/nishi/usr/local/lib/tensorflow-2.16.2-lite-flex:$LD_LIBRARY_PATH
+#   $ ros2 launch turtlebot3_navi_my go_auto_mower_foxbot.launch.py use_sim_time:=False [plann_test:=True] [ml_data:=True] [opp_on:=True]
+#   or
+#   $ ros2 launch turtlebot3_navi_my go_auto_mower.launch.py use_sim_time:=False robo_radius:=0.20 cource_width:=4 safe_margin:=4 safe_margin_dt:=5 r_lng:=0.25 move_l:=0.06 robo_radian_marker:=0.1 [plann_test:=True]
 #
 #  [multi_goals4_nav2-1] GetMap::get(): 99 error が出たら、SBC 上で実行する。 2024.2.10
 #    -> これは、qos=1 になっていないのでは?
