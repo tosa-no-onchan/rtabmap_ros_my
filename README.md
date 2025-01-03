@@ -1,4 +1,4 @@
-## rtabmap_ros_my for Ros2 humble
+## rtabmap_ros_my for Ros2 humble r2  
     
 ROS2 対応 自作 Turtlebot3(foxbot_core3_r2.ino) で、 Single USB Stereo Camera, OAK-D Lite を使って    
 rtabmap_ros が実行できる、 launch ファイル。    
@@ -71,6 +71,14 @@ A prebuild static Map is necessary.
     rtabmap_oak-d_rgb_depth_gps.launch.py  
     rtabmap_oak-d_stereo_gps.launch.py  
 
+2025.1.3  
+
+    update launch  
+    Support automower runs with Obstacle path planner with Lstm tflite.   
+    foxbot_nav2_oak-d_depth_gps.launch.py  
+
+
 #### 5. reffrence page.    
 
-  [tosa-no-onchan/foxbot_core3](https://github.com/tosa-no-onchan/foxbot_core3/)
+  [tosa-no-onchan/foxbot_core3](https://github.com/tosa-no-onchan/foxbot_core3/)  
+  [turtlebot3_navi_my for Ros2 humble r6](https://github.com/tosa-no-onchan/turtlebot3_navi_my)  
