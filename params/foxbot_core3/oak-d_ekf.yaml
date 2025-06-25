@@ -9,17 +9,12 @@ ekf_filter_node:
       # for wheel,odom_gps and imu fusion
 
       #frequency: 30.0
-      #frequency: 4.0
-      # changed by nishi 2024.5.2
-      #frequency: 6.0
-      # changed by nishi 2024.5.3
-      frequency: 7.0
-      #frequency: 15.0
-      #sensor_timeout: 0.1
-      sensor_timeout: 1.0
+      # update by nishi 2025.3.18
+      frequency: 25.0
+
+      sensor_timeout: 0.1
       two_d_mode: true
-      #transform_time_offset: 0.0
-      transform_time_offset: 0.2
+      transform_time_offset: 0.0
       transform_timeout: 0.0
       print_diagnostics: true
       publish_tf: true
@@ -37,13 +32,40 @@ ekf_filter_node:
       # update by nishi 2024.4.29 
       world_frame: odom           # Defaults to the value of odom_frame if unspecified
 
+      # add by nishi 2025.3.11
+      yaw_offset: 0.0
+      use_odometry_yaw: true
+
       #odom0: wheel odometry
       odom0: wheel
+      #odom0_config: [true, true, false,
+      #              false, false, true,
+      #              true , true, false,
+      #              false, false, true,
+      #              true, true, false]
+
+      # 下記も、OK みたい
+      # chnaged by nishi 2025.3.10
+      #odom0_config: [true, true, false,
+      #              false, false, true,
+      #              false, false, false,
+      #              false, false, false,
+      #              false, false, false]
+      
+      # 下記は?
+      # chnaged by nishi 2025.3.16
       odom0_config: [true, true, false,
-                    false, false, true,
-                    true , true, false,
-                    false, false, true,
-                    true, true, false]
+                    true, true, true,
+                    false, false, false,
+                    false, false, false,
+                    false, false, false]
+
+
+      odom0_queue_size: 10
+      #odom0_queue_size: 20
+      odom0_differential: false
+      #odom0_relative: true
+      odom0_relative: false
 
       odom1: odom_gps
       odom1_config: [false, false, false,
@@ -60,14 +82,45 @@ ekf_filter_node:
 
 
       imu0: imu0
-      imu0_config: [false, false, false,
-                    false, false, false,
-                    false, false, false,
-                    false, false, false,
-                    false, false, false]
-
       #imu0_config: [false, false, false,
       #              false, false, true,
       #              false, false, false,
       #              false, false, true,
       #              true, false, false]
+
+      # 下記設定は、エラーになる。?
+      # changed by nishi 2025.3.10
+      #imu0_config: [false, false, false,
+      #              false, false, true,
+      #              false, false, false,
+      #              false, false, false,
+      #              true, false, false]
+
+      # 下記は、OK みたい。 2025.3.12
+      #imu0_config: [false, false, false,
+      #              false, false, false,
+      #              false, false, false,
+      #              false, false, false,
+      #              false, false, false]
+
+      # 下記は、? 2025.3.16
+      imu0_config: [false, false, false,
+                    true, true, true,
+                    false, false, false,
+                    false, false, false,
+                    false, false, false]
+
+
+      imu0_differential: false  # If using a real robot you might want to set this to true, since usually absolute measurements from real imu's are not very accurate
+      #imu0_relative: true
+      imu0_relative: false
+      imu0_queue_size: 10
+      #imu0_queue_size: 20
+      imu0_pose_rejection_threshold: 0.8                 # Note the difference in parameter names
+      # changed by nishi 2025.3.11
+      #imu0_pose_rejection_threshold: 0.95                
+      imu0_twist_rejection_threshold: 0.8                #
+      imu0_linear_acceleration_rejection_threshold: 0.8  #
+      imu0_remove_gravitational_acceleration: true
+
+      use_control: false

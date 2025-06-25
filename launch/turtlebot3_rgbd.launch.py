@@ -31,6 +31,11 @@
 #   $ export TURTLEBOT3_MODEL=waffle
 #   $ . /usr/share/gazebo/setup.sh
 #   $ ros2 launch turtlebot3_gazebo turtlebot3_house.launch.py
+#
+#   Gass Station
+#     ~/colcon_ws/src/turtlebot3_simulations/turtlebot3_gazebo/launch/turtlebot3_world_nav_nishi2.launch.py
+#    $ ros2 launch turtlebot3_gazebo turtlebot3_world_nav_nishi2.launch.py
+#
 #   how to kill Gazeb server
 #   $ killall gzserver
 #
@@ -62,7 +67,10 @@
 #   $ ros2 launch turtlebot3_navi_my multi_goals4_cmd_vel.launch.py use_sim_time:=True
 #   $ ros2 launch turtlebot3_navi_my multi_goals4_nav2.launch.py use_sim_time:=True
 #
-#  6. C++ Auto Mower
+#  6. C++ Auto Map [navigation and slam]
+#   $ ros2 launch turtlebot3_navi_my go_auto_map.launch.py use_sim_time:=True
+#
+#  7. C++ Auto Mower
 #   SLAM: localization go
 #   $ ros2 launch rtabmap_ros_my turtlebot3_rgbd.launch.py localization:=true
 #
@@ -100,6 +108,7 @@ def generate_launch_description():
           #'Vis/MaxDepth':'3.0',        # add by nishi 2024.3.11 No Need
           #'Vis/MeanInliersDistance':'3.0',  # add by nishi 2024.3.11 No Need
           #'Kp/MaxDepth':'3.0',  # add by nishi 2024.3.11 No Need
+          'Grid/RangeMax': '3.0',    # add by nishi 
           #'Grid/MinGroundHeight':'0.01',   # add by nishi 2024.3.12 No Need
           'Grid/MaxGroundHeight':'0.05',    # add by nishi 2024.3.12 Very Good!! 3[M] 先の床が障害物になるのを防ぐ
           'Grid/MaxObstacleHeight':'0.7',   # add by nishi 2024.3.11 Needed

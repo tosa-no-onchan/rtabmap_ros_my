@@ -17,6 +17,10 @@
 #   $ export TURTLEBOT3_MODEL=waffle
 #   $ ros2 launch turtlebot3_gazebo turtlebot3_house.launch.py
 #
+#   Gass Station
+#     ~/colcon_ws/src/turtlebot3_simulations/turtlebot3_gazebo/launch/turtlebot3_world_nav_nishi2.launch.py
+#    $ ros2 launch turtlebot3_gazebo turtlebot3_world_nav_nishi2.launch.py
+#
 #   2. rtabmap_ros with scan
 #   SLAM:
 #   $ ros2 launch rtabmap_ros_my turtlebot3_scan.launch.py

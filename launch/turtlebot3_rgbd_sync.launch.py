@@ -31,6 +31,11 @@
 #   $ . /usr/share/gazebo/setup.sh
 #   $ ros2 launch turtlebot3_gazebo turtlebot3_house.launch.py
 #   #$ ros2 launch turtlebot3_gazebo turtlebot3_world.launch.py
+#
+#   Gass Station
+#     ~/colcon_ws/src/turtlebot3_simulations/turtlebot3_gazebo/launch/turtlebot3_world_nav_nishi2.launch.py
+#    $ ros2 launch turtlebot3_gazebo turtlebot3_world_nav_nishi2.launch.py
+#
 #   how to kill Gazeb server
 #   $ killall gzserver
 #
@@ -105,6 +110,7 @@ def generate_launch_description():
           'Reg/Force3DoF':'true',
           'RGBD/NeighborLinkRefining':'True',
           'Grid/RangeMin':'0.2', # ignore laser scan points on the robot itself
+          'Grid/RangeMax': '3.0',    # add by nishi 
           'Optimizer/GravitySigma':'0', # Disable imu constraints (we are already in 2D)
           # add by nishi
           "map_always_update":True,

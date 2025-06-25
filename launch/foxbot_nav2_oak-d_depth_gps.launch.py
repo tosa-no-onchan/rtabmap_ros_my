@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 #
-# ROS2 humble
+# ROS2 jazzy
 # SBC : Orange pi 5
-#       ubuntu 22.04
+#       ubuntu 24.04
 #
 # rtabmap_ros_my/launch/foxbot_nav2_oak-d_depth_gps.launch.py
 #
@@ -37,16 +37,17 @@
 #   $ sudo chmod 777 /dev/video0    ->  video
 #   $ ros2 run micro_ros_agent micro_ros_agent serial --dev /dev/ttyS0 -b 1000000 [-v6]
 #
-#  2) term2 camera,gps etc.
+#  2) term2 camera,gps, ekf etc.
 #   $ ros2 launch rtabmap_ros_my foxbot_nav2_oak-d_depth_gps.launch.py SBC:=true
 #
 #  Map Server static map load
 #  3) term3
-#   $ ros2 launch rtabmap_ros_my localization.launch.py
+#   $ ros2 launch rtabmap_ros_my localization.launch.py params_file:=/home/nishi/colcon_ws-jazzy/src/rtabmap_ros_my/params/foxbot_nav2/oak-d_rpp_params.yaml
 #
 #  navigation2 
 #  4) navigation2 rpp_planner
-#   $ ros2 launch nav2_bringup navigation_launch.py use_sim_time:=False params_file:=/home/nishi/colcon_ws/src/rtabmap_ros_my/params/foxbot_nav2/oak-d_rpp_params.yaml
+#   #$ ros2 launch nav2_bringup navigation_launch.py use_sim_time:=False params_file:=/home/nishi/colcon_ws-jazzy/src/rtabmap_ros_my/params/foxbot_nav2/oak-d_rpp_params.yaml
+#   $ ros2 launch rtabmap_ros_my navigation.launch.py use_sim_time:=False params_file:=/home/nishi/colcon_ws-jazzy/src/rtabmap_ros_my/params/foxbot_nav2/oak-d_rpp_params.yaml
 #
 # 5. Rviz2 on Remote PC
 #   1)
@@ -56,12 +57,16 @@
 #    $ ros2 launch rtabmap_ros_my foxbot_nav2_oak-d_depth_gps.launch.py PC2:=true
 #
 # 6. run  on remote PC or SBC
+#
+#   Teleop:
+#     $ ros2 run turtlebot3_teleop teleop_keyboard
+#
 #  1) C++ Program control
 #   #$ ros2 launch turtlebot3_navi_my multi_goals4_cmd_vel.launch.py use_sim_time:=False
 #   $ ros2 launch turtlebot3_navi_my multi_goals4_nav2.launch.py use_sim_time:=False
 #
 # 6.1 C++ Auto Mower [localization and  navigation]
-#   $ export LD_LIBRARY_PATH=/home/nishi/usr/local/lib/tensorflow-2.16.2-lite-flex:$LD_LIBRARY_PATH
+#   $ export LD_LIBRARY_PATH=/home/nishi/usr/local/lib/tensorflow-lite-flex:$LD_LIBRARY_PATH
 #   $ ros2 launch turtlebot3_navi_my go_auto_mower_foxbot.launch.py use_sim_time:=False [plann_test:=True] [ml_data:=True] [opp_on:=True]
 #   or
 #   $ ros2 launch turtlebot3_navi_my go_auto_mower.launch.py use_sim_time:=False robo_radius:=0.20 cource_width:=4 safe_margin:=4 safe_margin_dt:=5 r_lng:=0.25 move_l:=0.06 robo_radian_marker:=0.1 [plann_test:=True]
@@ -217,7 +222,8 @@ def generate_launch_description():
                     # -0.7[degre] 下向き の補正
                     #arguments=['0', '0', '0.193', '-1.5707963267948966', '-0.012217304763960306', '-1.5707963267948966', 'base_link', 'stereo_camera'],
                     #arguments=['0', '0', '0.193', '0', '-0.012217304763960306', '0', 'base_link', 'stereo_camera'],
-                    arguments=['0.038', '0', '0.193', '0', '-0.012217304763960306', '0', 'base_link', 'oak'],
+                    #arguments=['0.038', '0', '0.193', '0', '-0.012217304763960306', '0', 'base_link', 'oak'],
+                    arguments=['0.038', '0', '0.193', '0', '0.0', '0', 'base_link', 'oak'],     # これが、水平。 こちらが良いみたい。 2025.6.20
                     output="screen",
                 ),
                 Node(
@@ -346,7 +352,7 @@ def generate_launch_description():
                     parameters=[{
                         "publish_filtered_gps": True,
                         #"yaw_offset": 1.5707963,
-                        "yaw_offset": 1.47735,
+                        #"yaw_offset": 1.47735,     # changed by nishi 2025.1.22
                         "zero_altitude": True,
                     }],
                     remappings=[
