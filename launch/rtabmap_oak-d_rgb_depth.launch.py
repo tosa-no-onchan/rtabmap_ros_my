@@ -6,8 +6,8 @@
 #  Rtabmap_ros with oak-d depth Mapping or Acitve SLAM
 #
 #  foxbot_core3_r2.ino で、
-#    1) /odom or /odom_fox を、publish する。
-#    2) /tf を、publish する。
+#   1)#define USE_ODOM_FOX   -> /odom_fox publish を有効にする。
+#   2)bool use_tf_static=true;   -> /tf を、 publish する。
 #
 # 1. build on SBC and PC
 #  $ colcon build --symlink-install --parallel-workers 1 --packages-select rtabmap_ros_my
@@ -220,13 +220,21 @@ def generate_launch_description():
                     # import math
                     # math.radians(1)    1[degree] -> 0.017453292519943295[radian]
                     # x,y,z,roll,pitch.yaw
+                    # pitch 補正は、pitch > 0 が、前が下向く pitch < 0 前が上向く
                     #arguments=['0.038', '0', '0.193', '0', '-0.012217304763960306', '0', 'base_link', 'oak'],
                     # changed by nishi 2025.3.24
-                    arguments=['0.038', '0', '0.193', '0', '0', '0', 'base_link', 'oak'], # これが、水平。無難か
-                    # カメラ取り付け角 下 0.2[dgree] 0.003490658503988659[radian] 下向きのようなので、下向きを知らせる pitch > 0 が、下向き
-                    #arguments=['0.038', '0', '0.193', '0', '0.003490658503988659', '0', 'base_link', 'oak'],       #  NG
-                    # カメラ取り付け角 上 0.2[dgree] 0.003490658503988659[radian] 上向き? のようなので、上向きを知らせる pitch < 0 が、上向き
-                    #arguments=['0.038', '0', '0.193', '0', '-0.003490658503988659', '0', 'base_link', 'oak'],       # NG
+                    #arguments=['0.038', '0', '0.193', '0', '0', '0', 'base_link', 'oak'], # これが、水平。
+                    # 0.9 - 1.1[degree]下向きで、1[cm] 下げるが、基準か
+                    # カメラ取り付け角 下 0.9[dgree] 0.015707963267948967[radian] 下向きのようなので、下向きを知らせる pitch > 0 が、下向き
+                    #arguments=['0.038', '0', '0.193', '0', '0.015707963267948967', '0', 'base_link', 'oak'],       # 完走 OK。コース補正が少ない。一発でOK
+                    # カメラ取り付け角 下 1.1[dgree] 0.019198621771937627[radian] 下向きのようなので、下向きを知らせる pitch > 0 が、下向き
+                    #arguments=['0.038', '0', '0.193', '0', '0.019198621771937627', '0', 'base_link', 'oak'],       # まだ!!
+                    # 取り付け高さ: 1cm下げる。カメラ取り付け角 下 1.1[dgree] 0.019198621771937627[radian] 下向きのようなので、下向きを知らせる pitch > 0 が、下向き
+                    #arguments=['0.038', '0', '0.183', '0', '0.019198621771937627', '0', 'base_link', 'oak'],       # まあまあOK。 start地点が、下に潜る。コース補正がすくないか!!
+                    # 取り付け高さ: 2cm下げる。カメラ取り付け角 下 1.1[dgree] 0.019198621771937627[radian] 下向きのようなので、下向きを知らせる pitch > 0 が、下向き
+                    #arguments=['0.038', '0', '0.173', '0', '0.019198621771937627', '0', 'base_link', 'oak'],       # まあまあ OKか。コース補正が少しある。
+                    # 取り付け高さ: 1cm下げる。カメラ取り付け角 下 1.2[dgree] 0.020943951023931952[radian] 下向きのようなので、下向きを知らせる pitch > 0 が、下向き
+                    arguments=['0.038', '0', '0.183', '0', '0.020943951023931952', '0', 'base_link', 'oak'],       # まあまあOKか。start地点が、下に潜る。戻りが近いか!!コース補正動作がある。
                     output="screen",
                 ),
                 Node(

@@ -4,9 +4,9 @@
 # SBC : Orange pi 5
 #       ubuntu 24.04
 #
-# rtabmap_ros_my/launch/foxbot_nav2_oak-d_depth_gps.launch.py
+# rtabmap_ros_my/launch/foxbot_nav2_oak-d_depth_gps_ukf.launch.py
 #
-#  rbot navigation with robot_localization/ekf_node, Stereo Camera (rgbd) and GPS.
+#  rbot navigation with robot_localization/ukf_node, Stereo Camera (rgbd) and GPS.
 #  
 # foxbot_core3_r2.ino setting
 #  1)#define USE_ODOM_FOX   -> odom_fox を有効にする。
@@ -37,7 +37,7 @@
 #   $ sudo chmod 777 /dev/video0    ->  video
 #   $ ros2 run micro_ros_agent micro_ros_agent serial --dev /dev/ttyS0 -b 1000000 [-v6]
 #
-#  2) term2 camera,gps, ekf etc.
+#  2) term2 camera,gps, ukf etc.
 #   $ ros2 launch rtabmap_ros_my foxbot_nav2_oak-d_depth_gps.launch.py SBC:=true
 #
 #  Map Server static map load
@@ -54,7 +54,7 @@
 #    $ ros2 launch nav2_bringup rviz_launch.py
 #   or
 #   2) PC2:=true 
-#    $ ros2 launch rtabmap_ros_my foxbot_nav2_oak-d_depth_gps.launch.py PC2:=true
+#    $ ros2 launch rtabmap_ros_my foxbot_nav2_oak-d_depth_gps_ukf.launch.py PC2:=true
 #
 # 6. run  on remote PC or SBC
 #
@@ -367,8 +367,8 @@ def generate_launch_description():
                 ),
                 Node(
                     # https://github.com/cra-ros-pkg/robot_localization/blob/foxy-devel/launch/ekf.launch.py
-                    package='robot_localization', executable='ekf_node', name='ekf_filter_node', output='screen',
-                    parameters=[os.path.join(get_package_share_directory("rtabmap_ros_my"), 'params','foxbot_nav2', 'oak-d_ekf.yaml')],
+                    package='robot_localization', executable='ukf_node', name='ukf_filter_node', output='screen',
+                    parameters=[os.path.join(get_package_share_directory("rtabmap_ros_my"), 'params','foxbot_nav2', 'oak-d_ukf.yaml')],
                     remappings=[
                         # subscribe
                         ('wheel', '/odom_fox'), 

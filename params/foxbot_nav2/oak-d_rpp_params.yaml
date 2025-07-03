@@ -182,7 +182,9 @@ controller_server:
       # changed by nishi 2024.4.23
       #max_angular_accel: 0.6
       # changed by nishi 2025.3.13
-      max_angular_accel: 0.8
+      #max_angular_accel: 0.8
+      # changed by nishi 2025.5.18
+      max_angular_accel: 1.0
       max_robot_pose_search_dist: 10.0
       use_interpolation: false
 
