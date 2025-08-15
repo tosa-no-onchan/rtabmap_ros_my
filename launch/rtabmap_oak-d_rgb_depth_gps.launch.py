@@ -131,6 +131,7 @@ def generate_launch_description():
     #stereo_image_proc = get_package_share_directory('stereo_image_proc')
     rtabmap_ros_my = get_package_share_directory('rtabmap_ros_my')
     depthai_ros_my=get_package_share_directory('depthai_ros_my')
+    lc29h_gps=get_package_share_directory('lc29h_gps')
     lc29h_gps_rtk=get_package_share_directory('lc29h_gps_rtk')
 
     auto_exp       = LaunchConfiguration('auto_exp', default = True)
@@ -242,8 +243,11 @@ def generate_launch_description():
                     package='tf2_ros',
                     executable='static_transform_publisher',
                     name='camera_base_link',
-                    # -90[degre]
-                    # x y z yaw pitch roll
+                    # python3
+                    # import math
+                    # math.radians(1)    1[degree] -> 0.017453292519943295[radian]
+                    # x,y,z,roll,pitch.yaw
+                    # pitch 補正は、pitch > 0 が、前が下向く pitch < 0 前が上向く
                     #arguments=['0', '0', '0.193', '-1.5707963267948966', '0', '-1.5707963267948966', 'base_link', 'stereo_camera'],
                     # -0.5[degre] 下向き の補正
                     #arguments=['0', '0', '0.193', '-1.5707963267948966', '-0.008726646259971648', '-1.5707963267948966', 'base_link', 'stereo_camera'],
@@ -252,7 +256,10 @@ def generate_launch_description():
                     # -0.7[degre] 下向き の補正
                     #arguments=['0.038', '0', '0.193', '-1.5707963267948966', '-0.012217304763960306', '-1.5707963267948966', 'base_link', 'stereo_camera'],
                     #arguments=['0.038', '0', '0.193', '0', '-0.012217304763960306', '0', 'base_link', 'oak'],
-                    arguments=['0.038', '0', '0.193', '0', '0.0', '0', 'base_link', 'oak'],     # これが、水平。 こちらが良いみたい。 2025.6.20
+                    #arguments=['0.038', '0', '0.193', '0', '0.0', '0', 'base_link', 'oak'],     # これが、水平。 こちらが良いみたい。 2025.6.20
+                    # 2025.8.9 copy from src/rtabmap_ros_my/launch/rtabmap_oak-d_rgb_depth.launch.py
+                    # 取り付け高さ: 1cm下げる。カメラ取り付け角 下 1.2[dgree] 0.020943951023931952[radian] 下向きのようなので、下向きを知らせる pitch > 0 が、下向き
+                    arguments=['0.038', '0', '0.183', '0', '0.020943951023931952', '0', 'base_link', 'oak'],       # まあまあOKか。start地点が、下に潜る。戻りが近いか!!コース補正動作がある。
                     output="screen",
                 ),
                 Node(
@@ -340,6 +347,7 @@ def generate_launch_description():
                     PythonLaunchDescriptionSource(
                         #os.path.join(gysfdmaxb_gps,'launch', 'gysfdmaxb_gps.launch.py')
                         os.path.join(lc29h_gps_rtk,'launch', 'lc29h_gps_rtk.launch.py')
+                        #os.path.join(lc29h_gps,'launch', 'lc29h_gps.launch.py')
                     ),
                     launch_arguments={
                         #'rate':'6',
@@ -386,13 +394,16 @@ def generate_launch_description():
 
                 Node(
                     # https://yoshiaki-toyama.com/robot_localization/
-                    # https://github.com/cra-ros-pkg/robot_localization/blob/foxy-devel/doc/navsat_transform_node.rst
+                    # https://github.com/cra-ros-pkg/robot_localization/blob/jazzy-devel/doc/navsat_transform_node.rst
+                    # パラメータの中に、下記値を渡せるみたい。
+                    #  datum: [38.161491, -122.4546443, 0.0] # pre-set datum if needed, [lat, lon, yaw]
                     package='robot_localization', executable='navsat_transform_node', name='navsat_transform_node', output='screen',
-                    parameters=[{
-                        "publish_filtered_gps": True,
-                        #"yaw_offset": 1.5707963,
-                        "zero_altitude": True,
-                    }],
+                    parameters=[os.path.join(get_package_share_directory("rtabmap_ros_my"), 'params','foxbot_core3', 'nav_sat.yaml')],
+                    #parameters=[{
+                    #    "publish_filtered_gps": True,
+                    #    #"yaw_offset": 1.5707963,
+                    #    "zero_altitude": True,
+                    #}],
                     remappings=[
                         # subscribe
                         ('gps/fix', '/gps/fix'), 

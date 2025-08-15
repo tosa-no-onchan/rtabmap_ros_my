@@ -10,7 +10,9 @@ ekf_filter_node:
 
       #frequency: 30.0
       # update by nishi 2025.3.18
-      frequency: 25.0
+      #frequency: 25.0
+      # update by nishi 2025.8.12
+      frequency: 15.0
 
       sensor_timeout: 0.1
       two_d_mode: true
@@ -54,8 +56,15 @@ ekf_filter_node:
       
       # 下記は?
       # chnaged by nishi 2025.3.16
-      odom0_config: [true, true, false,
-                    true, true, true,
+      #odom0_config: [true, true, false,
+      #              true, true, true,
+      #              false, false, false,
+      #              false, false, false,
+      #              false, false, false]
+
+      # chnaged by nishi 2025.7.3
+      odom0_config: [true, true, true,
+                    false, false, true,
                     false, false, false,
                     false, false, false,
                     false, false, false]
@@ -68,17 +77,17 @@ ekf_filter_node:
       odom0_relative: false
 
       odom1: odom_gps
-      odom1_config: [false, false, false,
-                    false, false, false,
-                    false, false, false,
-                    false, false, false,
-                    false, false, false]
-
-      #odom1_config: [true, true, false,
+      #odom1_config: [false, false, false,
       #              false, false, false,
       #              false, false, false,
       #              false, false, false,
       #              false, false, false]
+
+      odom1_config: [true, true, false,
+                    false, false, false,
+                    false, false, false,
+                    false, false, false,
+                    false, false, false]
 
 
       imu0: imu0
@@ -124,3 +133,4 @@ ekf_filter_node:
       imu0_remove_gravitational_acceleration: true
 
       use_control: false
+

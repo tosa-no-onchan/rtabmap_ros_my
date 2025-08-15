@@ -8,7 +8,9 @@ ekf_filter_node:
       # mode1.yaml
       # for wheel,odom_gps and imu fusion
 
-      frequency: 30.0
+      #frequency: 30.0
+      # update by nishi 2025.8.12
+      frequency: 15.0
 
       sensor_timeout: 0.1
       two_d_mode: true
@@ -82,17 +84,17 @@ ekf_filter_node:
       odom0_relative: false
 
       odom1: odom_gps
-      odom1_config: [false, false, false,
-                    false, false, false,
-                    false, false, false,
-                    false, false, false,
-                    false, false, false]
-
-      #odom1_config: [true, true, false,
+      #odom1_config: [false, false, false,
       #              false, false, false,
       #              false, false, false,
       #              false, false, false,
       #              false, false, false]
+
+      odom1_config: [true, true, false,
+                    false, false, false,
+                    false, false, false,
+                    false, false, false,
+                    false, false, false]
 
       imu0: imu0
       #imu0_config: [false, false, false,

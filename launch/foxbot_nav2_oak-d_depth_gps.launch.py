@@ -125,7 +125,7 @@ def generate_launch_description():
     #stereo_image_proc = get_package_share_directory('stereo_image_proc')
     rtabmap_ros_my = get_package_share_directory('rtabmap_ros_my')
     depthai_ros_my=get_package_share_directory('depthai_ros_my')
-    #lc29h_gps=get_package_share_directory('lc29h_gps')
+    lc29h_gps=get_package_share_directory('lc29h_gps')
     lc29h_gps_rtk=get_package_share_directory('lc29h_gps_rtk')
 
     auto_exp       = LaunchConfiguration('auto_exp', default = True)
@@ -310,6 +310,7 @@ def generate_launch_description():
                 IncludeLaunchDescription(
                     PythonLaunchDescriptionSource(
                         os.path.join(lc29h_gps_rtk,'launch', 'lc29h_gps_rtk.launch.py')
+                        #os.path.join(lc29h_gps,'launch', 'lc29h_gps.launch.py')
                     ),
                     launch_arguments={
                         #'rate':'6',         # best fit value, use this value 6 2024.2.22
@@ -348,12 +349,13 @@ def generate_launch_description():
                     # https://yoshiaki-toyama.com/robot_localization/
                     # https://github.com/cra-ros-pkg/robot_localization/blob/foxy-devel/doc/navsat_transform_node.rst
                     package='robot_localization', executable='navsat_transform_node', name='navsat_transform_node', output='screen',
-                    parameters=[{
-                        "publish_filtered_gps": True,
-                        #"yaw_offset": 1.5707963,
-                        #"yaw_offset": 1.47735,     # changed by nishi 2025.1.22
-                        "zero_altitude": True,
-                    }],
+                    parameters=[os.path.join(get_package_share_directory("rtabmap_ros_my"), 'params','foxbot_nav2', 'nav_sat.yaml')],
+                    #parameters=[{
+                    #    "publish_filtered_gps": True,
+                    #    #"yaw_offset": 1.5707963,
+                    #    #"yaw_offset": 1.47735,     # changed by nishi 2025.1.22
+                    #    "zero_altitude": True,
+                    #}],
                     remappings=[
                         # subscribe
                         ('gps/fix', '/gps/fix'), 

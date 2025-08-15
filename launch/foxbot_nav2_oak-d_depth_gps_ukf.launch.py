@@ -38,7 +38,7 @@
 #   $ ros2 run micro_ros_agent micro_ros_agent serial --dev /dev/ttyS0 -b 1000000 [-v6]
 #
 #  2) term2 camera,gps, ukf etc.
-#   $ ros2 launch rtabmap_ros_my foxbot_nav2_oak-d_depth_gps.launch.py SBC:=true
+#   $ ros2 launch rtabmap_ros_my foxbot_nav2_oak-d_depth_gps_ukf.launch.py SBC:=true
 #
 #  Map Server static map load
 #  3) term3
