@@ -77,8 +77,28 @@ A prebuild static Map is necessary.
     Support automower runs with Obstacle path planner with Lstm tflite.   
     foxbot_nav2_oak-d_depth_gps.launch.py  
 
+2025.8.15  
+
+    suport Quectel LG290P GNSS-RTK  
+
+  [@tosa-no-onchan/lc29h_gps_rtk](https://github.com/tosa-no-onchan/lc29h_gps_rtk)  
+    
+    
+    update launch  
+    launch/rtabmap_oak-d_rgb_depth_gps.launch.py  
+    use params/foxbot_core3/nav_sat.yaml  
+    mv params/foxbot_core3/nav_sat.yaml.sample params/foxbot_core3/nav_sat.yaml  
+    edit datum: [38.161491, -122.4546443, 0.0] # pre-set datum if needed, [lat, lon, yaw]  
+
+    update launch  
+    launch/foxbot_nav2_oak-d_depth_gps.launch.py  
+    use params/foxbot_nav2/nav_sat.yaml  
+    mv params/foxbot_nav2/nav_sat.yaml.sample params/foxbot_nav2/nav_sat.yaml  
+    edit datum: [38.161491, -122.4546443, 0.0] # pre-set datum if needed, [lat, lon, yaw]  
+
+
 
 #### 5. reffrence page.    
 
-  [tosa-no-onchan/foxbot_core3](https://github.com/tosa-no-onchan/foxbot_core3/)  
+  [@tosa-no-onchan/foxbot_core3](https://github.com/tosa-no-onchan/foxbot_core3/)  
   [turtlebot3_navi_my for Ros2 humble r6](https://github.com/tosa-no-onchan/turtlebot3_navi_my)  
