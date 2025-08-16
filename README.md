@@ -82,6 +82,7 @@ A prebuild static Map is necessary.
     suport Quectel LG290P GNSS-RTK  
 
   [@tosa-no-onchan/lc29h_gps_rtk](https://github.com/tosa-no-onchan/lc29h_gps_rtk)  
+  [Quectel LG290P は、みちびき L6 受信ができるのか。#2](https://www.netosa.com/blog/2025/07/quectel-lg290p-l6-2.html)  
     
     
     update launch  
