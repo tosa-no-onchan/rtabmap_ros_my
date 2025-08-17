@@ -83,6 +83,7 @@ A prebuild static Map is necessary.
 
   [@tosa-no-onchan/lc29h_gps_rtk](https://github.com/tosa-no-onchan/lc29h_gps_rtk)  
   [Quectel LG290P は、みちびき L6 受信ができるのか。#2](https://www.netosa.com/blog/2025/07/quectel-lg290p-l6-2.html)  
+  [ROS2 自作 Turtlebot3 による 草刈りロボット開発。#10 走行開始時のロボットの向き。](https://www.netosa.com/blog/2025/01/ros2-turtlebot3-10.html)  
     
     
     update launch  
