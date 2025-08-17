@@ -92,7 +92,7 @@ A prebuild static Map is necessary.
     mv params/foxbot_core3/nav_sat.yaml.sample params/foxbot_core3/nav_sat.yaml  
     edit datum: [38.161491, -122.4546443, 0.0] # pre-set datum if needed, [lat, lon, yaw]  
     lat and lon : robot start postion  
-    yaw: 0[rad] -> east  
+    yaw: X+ orientation 0[rad] -> east  
 
     update launch  
     launch/foxbot_nav2_oak-d_depth_gps.launch.py  
@@ -100,7 +100,7 @@ A prebuild static Map is necessary.
     mv params/foxbot_nav2/nav_sat.yaml.sample params/foxbot_nav2/nav_sat.yaml  
     edit datum: [38.161491, -122.4546443, 0.0] # pre-set datum if needed, [lat, lon, yaw]  
     lat and lon : robot start postion  
-    yaw: 0[rad] -> east  
+    yaw: X+ orientation 0[rad] -> east  
 
 
 
